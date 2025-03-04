@@ -13,12 +13,14 @@ import ru.yandex.practicum.model.hub.enums.HubEventType;
 import java.time.Instant;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type",
-    defaultImpl = HubEventType.class)
+                include = JsonTypeInfo.As.EXISTING_PROPERTY,
+                property = "type",
+                defaultImpl = HubEventType.class)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = DeviceAddedEvent.class, name = "DEVICE_ADDED"),
-    @JsonSubTypes.Type(value = DeviceAddedEvent.class, name = "DEVICE_REMOVE")})
+    @JsonSubTypes.Type(value = DeviceAddedEvent.class, name = "DEVICE_ADDED_EVENT"),
+    @JsonSubTypes.Type(value = DeviceRemoveEvent.class, name = "DEVICE_REMOVE_EVENT"),
+    @JsonSubTypes.Type(value = ScenarioAddedEvent.class, name = "SCENARIO_ADDED_EVENT"),
+    @JsonSubTypes.Type(value = ScenarioRemovedEvent.class, name = "SCENARIO_REMOVED_EVENT")})
 @Getter
 @Setter
 @ToString
