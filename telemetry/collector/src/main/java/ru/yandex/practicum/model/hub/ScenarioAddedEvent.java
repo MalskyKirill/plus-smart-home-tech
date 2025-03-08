@@ -5,9 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.model.hub.enums.HubEventType;
+import ru.yandex.practicum.model.enums.HubEventType;
 
-import java.time.Instant;
 import java.util.List;
 
 @Getter

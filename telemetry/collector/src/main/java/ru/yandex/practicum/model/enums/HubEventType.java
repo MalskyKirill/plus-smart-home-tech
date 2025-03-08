@@ -1,4 +1,4 @@
-package ru.yandex.practicum.model.hub.enums;
+package ru.yandex.practicum.model.enums;
 
 public enum HubEventType {
     DEVICE_ADDED_EVENT,
