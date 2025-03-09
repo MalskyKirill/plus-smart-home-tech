@@ -21,8 +21,8 @@ public class DeviceAddedHandler extends BaseHubHandler{
         DeviceAddedEvent event = (DeviceAddedEvent) hubEvent;
 
         return HubEventAvro.newBuilder()
-            .setHubId(event.getHubId())
-            .setTimestamp(event.getTimestamp())
+            .setHubId(hubEvent.getHubId())
+            .setTimestamp(hubEvent.getTimestamp())
             .setPayload(new DeviceAddedEventAvro(event.getId(), toDeviceTypeAvro(event.getDeviceType())))
             .build();
     }
