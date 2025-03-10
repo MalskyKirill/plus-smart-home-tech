@@ -10,7 +10,7 @@ import ru.yandex.practicum.model.enums.HubEventType;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class DeviceAddedEvent extends HubEvent{
+public class DeviceAddedEvent extends HubEvent {
     @NotBlank
     private String id;
     private DeviceType deviceType;

@@ -6,7 +6,7 @@ import ru.yandex.practicum.model.sensor.SensorEvent;
 import ru.yandex.practicum.producer.KafkaEventProducer;
 
 @RequiredArgsConstructor
-public abstract class BaseSensorHandler implements SensorEventHandler{
+public abstract class BaseSensorHandler implements SensorEventHandler {
     private final KafkaEventProducer producer;
     private String topic = "telemetry.sensors.v1";
 

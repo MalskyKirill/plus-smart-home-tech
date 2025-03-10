@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class ScenarioAddedEvent extends HubEvent{
+public class ScenarioAddedEvent extends HubEvent {
     @NotBlank
     @Size(min = 3)
     private String name;

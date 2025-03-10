@@ -9,7 +9,7 @@ import ru.yandex.practicum.model.sensor.SensorEvent;
 import ru.yandex.practicum.producer.KafkaEventProducer;
 
 @Component
-public class LightSensorHandler extends BaseSensorHandler{
+public class LightSensorHandler extends BaseSensorHandler {
     public LightSensorHandler(KafkaEventProducer producer) {
         super(producer);
     }

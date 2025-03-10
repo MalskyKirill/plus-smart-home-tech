@@ -20,7 +20,7 @@ public class KafkaEventProducer implements AutoCloseable {
         try {
             ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, null, timestamp.toEpochMilli(), hubId, message);
             eventProducer.send(record, (metadata, exception) -> {
-                if(exception != null) {
+                if (exception != null) {
                     log.error("Ошибка при отправке сообщения", exception);
                 }
             });

@@ -9,7 +9,7 @@ import ru.yandex.practicum.model.sensor.SwitchSensorEvent;
 import ru.yandex.practicum.producer.KafkaEventProducer;
 
 @Component
-public class SwitchSensorHandler extends BaseSensorHandler{
+public class SwitchSensorHandler extends BaseSensorHandler {
     public SwitchSensorHandler(KafkaEventProducer producer) {
         super(producer);
     }

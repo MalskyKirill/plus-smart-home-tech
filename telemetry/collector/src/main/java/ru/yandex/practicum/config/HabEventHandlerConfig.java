@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.yandex.practicum.handler.hub.*;
 import ru.yandex.practicum.model.enums.HubEventType;
-import ru.yandex.practicum.model.hub.DeviceAddedEvent;
 
 import java.util.Map;
 

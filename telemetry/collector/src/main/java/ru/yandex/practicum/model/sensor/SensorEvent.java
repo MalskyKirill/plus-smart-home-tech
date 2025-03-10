@@ -11,9 +11,9 @@ import ru.yandex.practicum.model.enums.SensorEventType;
 import java.time.Instant;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-                include = JsonTypeInfo.As.EXISTING_PROPERTY,
-                property = "type",
-                defaultImpl = SensorEventType.class)
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    defaultImpl = SensorEventType.class)
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ClimateSensorEvent.class, name = "CLIMATE_SENSOR_EVENT"),
     @JsonSubTypes.Type(value = LightSensorEvent.class, name = "LIGHT_SENSOR_EVENT"),

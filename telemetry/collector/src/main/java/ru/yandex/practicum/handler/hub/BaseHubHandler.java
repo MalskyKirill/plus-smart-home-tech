@@ -6,7 +6,7 @@ import ru.yandex.practicum.model.hub.HubEvent;
 import ru.yandex.practicum.producer.KafkaEventProducer;
 
 @RequiredArgsConstructor
-public abstract class BaseHubHandler implements HubEventHandler{
+public abstract class BaseHubHandler implements HubEventHandler {
     private final KafkaEventProducer producer;
     private String topic = "telemetry.hubs.v1";
 

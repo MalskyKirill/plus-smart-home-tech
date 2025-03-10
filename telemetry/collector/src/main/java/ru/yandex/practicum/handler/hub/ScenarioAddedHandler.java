@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class ScenarioAddedHandler extends BaseHubHandler{
+public class ScenarioAddedHandler extends BaseHubHandler {
     public ScenarioAddedHandler(KafkaEventProducer producer) {
         super(producer);
     }
