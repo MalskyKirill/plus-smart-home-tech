@@ -24,7 +24,7 @@ public class SensorEventHandlerConfig {
             SensorEventType.LIGHT_SENSOR_EVENT, lightSensorHandler,
             SensorEventType.MOTION_SENSOR_EVENT, motionSensorHandler,
             SensorEventType.SWITCH_SENSOR_EVENT, switchSensorHandler,
-            SensorEventType.TEMPERATURE_SENSOR_EVENT, switchSensorHandler
+            SensorEventType.TEMPERATURE_SENSOR_EVENT, temperatureSensorHandler
         );
     }
 }

@@ -12,12 +12,8 @@ import ru.yandex.practicum.model.enums.OperationType;
 @Setter
 @ToString
 public class ScenarioCondition {
-    @NotBlank
     private String sensorId;
-    @NotNull
     private ConditionType type;
-    @NotNull
     private OperationType operation;
-    @NotNull
     private Integer value;
 }
