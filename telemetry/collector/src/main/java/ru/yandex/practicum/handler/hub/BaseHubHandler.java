@@ -2,8 +2,12 @@ package ru.yandex.practicum.handler.hub;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.avro.specific.SpecificRecordBase;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.model.hub.HubEvent;
 import ru.yandex.practicum.producer.KafkaEventProducer;
+
+import java.time.Instant;
 
 @RequiredArgsConstructor
 public abstract class BaseHubHandler implements HubEventHandler {
@@ -11,9 +15,13 @@ public abstract class BaseHubHandler implements HubEventHandler {
     private String topic = "telemetry.hubs.v1";
 
     @Override
-    public void handle(HubEvent hubEvent) {
-        producer.send(toHubEventAvro(hubEvent), hubEvent.getHubId(), hubEvent.getTimestamp(), topic);
+    public void handle(HubEventProto hubEvent) {
+        producer.send(toHubEventAvro(hubEvent), hubEvent.getHubId(), mapTimestampToInstant(hubEvent), topic);
     }
 
-    public abstract SpecificRecordBase toHubEventAvro(HubEvent hubEvent);
+    public Instant mapTimestampToInstant(HubEventProto hubEvent) {
+        return Instant.ofEpochSecond(hubEvent.getTimestamp().getSeconds(), hubEvent.getTimestamp().getNanos());
+    }
+
+    public abstract HubEventAvro toHubEventAvro(HubEventProto hubEvent);
 }
