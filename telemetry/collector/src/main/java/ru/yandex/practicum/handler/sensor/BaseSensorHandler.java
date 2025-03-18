@@ -1,9 +1,11 @@
 package ru.yandex.practicum.handler.sensor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.avro.specific.SpecificRecordBase;
-import ru.yandex.practicum.model.sensor.SensorEvent;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.producer.KafkaEventProducer;
+
+import java.time.Instant;
 
 @RequiredArgsConstructor
 public abstract class BaseSensorHandler implements SensorEventHandler {
@@ -11,9 +13,13 @@ public abstract class BaseSensorHandler implements SensorEventHandler {
     private String topic = "telemetry.sensors.v1";
 
     @Override
-    public void handle(SensorEvent sensorEvent) {
-        producer.send(toSensorEventAvro(sensorEvent), sensorEvent.getHubId(), sensorEvent.getTimestamp(), topic);
+    public void handle(SensorEventProto sensorEvent) {
+        producer.send(toSensorEventAvro(sensorEvent), sensorEvent.getHubId(), mapTimestampToInstant(sensorEvent), topic);
     }
 
-    public abstract SpecificRecordBase toSensorEventAvro(SensorEvent sensorEvent);
+    public Instant mapTimestampToInstant(SensorEventProto hubEvent) {
+        return Instant.ofEpochSecond(hubEvent.getTimestamp().getSeconds(), hubEvent.getTimestamp().getNanos());
+    }
+
+    public abstract SensorEventAvro toSensorEventAvro(SensorEventProto sensorEvent);
 }

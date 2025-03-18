@@ -1,10 +1,8 @@
 package ru.yandex.practicum.handler.hub;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.avro.specific.SpecificRecordBase;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.model.hub.HubEvent;
 import ru.yandex.practicum.producer.KafkaEventProducer;
 
 import java.time.Instant;
