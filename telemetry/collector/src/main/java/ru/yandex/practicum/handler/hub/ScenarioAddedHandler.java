@@ -37,7 +37,13 @@ public class ScenarioAddedHandler extends BaseHubHandler {
                 .setSensorId(condition.getSensorId())
                 .setType(ConditionTypeAvro.valueOf(condition.getType().name()))
                 .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name()))
-                .setValue(condition.getIntValue())
+                .setValue(
+                    switch (condition.getValueCase()) {
+                        case INT_VALUE -> condition.getIntValue();
+                        case BOOL_VALUE -> condition.getBoolValue();
+                        case VALUE_NOT_SET -> null;
+                    }
+                )
                 .build())
             .collect(Collectors.toList());
     }
@@ -54,6 +60,6 @@ public class ScenarioAddedHandler extends BaseHubHandler {
 
     @Override
     public HubEventProto.PayloadCase getMessageType() {
-        return null;
+        return HubEventProto.PayloadCase.SCENARIO_ADDED;
     }
 }
