@@ -28,24 +28,25 @@ public class AggregationStarter {
     private final Consumer<String, SpecificRecordBase> consumer;
     private final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
     @Value("${kafka.telemetry-sensors-topic}")
-    private final String telemetrySensorsTopic;
+    private String telemetrySensorsTopic;
     @Value("${kafka.telemetry-snapshots-topic}")
-    private final String telemetrySnapshotTopic;
+    private String telemetrySnapshotTopic;
 
     public void start() {
-        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
         try {
             consumer.subscribe(List.of(telemetrySensorsTopic));
-
+            Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
 
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+                    log.info("обрабатываем сообщение {}", record.value());
                     SensorEventAvro eventAvro = (SensorEventAvro) record.value();
                     Optional<SensorsSnapshotAvro> snapshotAvro = eventHandler.updateState(eventAvro);
-
+                    log.info("Получили снимок состояния {}", snapshotAvro);
                     if (snapshotAvro.isPresent()) {
+                        log.info("запись снимка в топик Kafka");
                         ProducerRecord<String, SpecificRecordBase> message = new ProducerRecord<>(
                             telemetrySnapshotTopic,
                             null,
@@ -53,11 +54,9 @@ public class AggregationStarter {
                             eventAvro.getHubId(),
                             snapshotAvro.get()
                         );
-
                         producer.send(message);
                     }
                 }
-
                 consumer.commitSync();
             }
         } catch (WakeupException ignored) {
@@ -65,7 +64,6 @@ public class AggregationStarter {
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
         } finally {
-
             try {
                 producer.flush();
                 consumer.commitSync();

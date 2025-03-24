@@ -15,9 +15,10 @@ public class AggregatorEventHandler {
     Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>();
 
     public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
-        String hubId = event.getHubId(); // взяли айдишник хаба у пришедшего эвента
 
-        SensorsSnapshotAvro snapshot = snapshots.getOrDefault(hubId, createSensorSnapshotAvro(hubId)); // проверили есть ли снапшот в мапе если нет создали новый
+        SensorsSnapshotAvro snapshot = snapshots.getOrDefault(event.getHubId()
+            , createSensorSnapshotAvro(event.getHubId())); // проверили есть ли снапшот в мапе если нет создали новый
+
         SensorStateAvro oldState = snapshot.getSensorsState().get(event.getId()); // взяли старое сотояние снепшота
 
         if (oldState != null // если оно есть
@@ -28,8 +29,9 @@ public class AggregatorEventHandler {
 
         SensorStateAvro newState = createSensorStateAvro(event); // создаем новое состояние на основе данных события
         snapshot.getSensorsState().put(event.getId(), newState); //добавляем его в снапшот
+
         snapshot.setTimestamp(event.getTimestamp()); // обновляем таймстемп снапшота таймстемпом из события
-        snapshots.put(hubId, snapshot); // записываем снапшот в мапу
+        snapshots.put(event.getHubId(), snapshot); // записываем снапшот в мапу
         return Optional.of(snapshot); // возвращаем снапшот
     }
 
@@ -40,7 +42,6 @@ public class AggregatorEventHandler {
             .setSensorsState(new HashMap<>())
             .build();
     }
-
 
     private SensorStateAvro createSensorStateAvro(SensorEventAvro event) {
         return SensorStateAvro.newBuilder()
