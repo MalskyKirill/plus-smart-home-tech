@@ -22,8 +22,8 @@ public class AggregatorEventHandler {
         SensorStateAvro oldState = snapshot.getSensorsState().get(event.getId()); // взяли старое сотояние снепшота
 
         if (oldState != null // если оно есть
-                && oldState.getTimestamp().isAfter(event.getTimestamp()) // и если оно случилось после текущего события
-                && oldState.getData().equals(event.getPayload())) { // и если его даные равны данным текущего события
+                && (oldState.getTimestamp().isAfter(event.getTimestamp()) // и если оно случилось после текущего события
+                || oldState.getData().equals(event.getPayload()))) { // или если его даные равны данным текущего события
             return Optional.empty(); // вернем пустой опшин
         }
 
@@ -50,3 +50,4 @@ public class AggregatorEventHandler {
             .build();
     }
 }
+
