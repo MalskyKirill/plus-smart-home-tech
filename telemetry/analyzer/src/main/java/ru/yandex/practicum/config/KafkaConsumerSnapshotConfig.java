@@ -22,7 +22,6 @@ public class KafkaConsumerSnapshotConfig {
         config.put(ConsumerConfig.CLIENT_ID_CONFIG, kafkaPropertiesConfig.getConsumerSnapshotClientIdConfig());
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaPropertiesConfig.getConsumerSnapshotKeyDeserializer());
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaPropertiesConfig.getConsumerSnapshotValueDeserializer());
-
         return new KafkaConsumer<>(config);
     }
 }

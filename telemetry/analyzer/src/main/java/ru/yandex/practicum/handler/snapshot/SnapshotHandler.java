@@ -39,7 +39,7 @@ public class SnapshotHandler {
         actionRepository.findAllByScenario(scenario).forEach(scenarioActionProducer::sendAction);
     }
 
-    public List<Scenario> getScenariosBySnapshots(SensorsSnapshotAvro sensorsSnapshotAvro) {
+    private List<Scenario> getScenariosBySnapshots(SensorsSnapshotAvro sensorsSnapshotAvro) {
         List<Scenario> scenarios = scenarioRepository.findByHubId(sensorsSnapshotAvro.getHubId());
         Map<String, SensorStateAvro> sensorStates = sensorsSnapshotAvro.getSensorsState();
         log.info("количество сценариев {} ", scenarios.size());
@@ -76,3 +76,4 @@ public class SnapshotHandler {
         };
     }
 }
+

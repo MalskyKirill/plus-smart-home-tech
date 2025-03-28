@@ -25,6 +25,4 @@ public class KafkaConsumerHubConfig {
 
         return new KafkaConsumer<>(config);
     }
-
-
 }
