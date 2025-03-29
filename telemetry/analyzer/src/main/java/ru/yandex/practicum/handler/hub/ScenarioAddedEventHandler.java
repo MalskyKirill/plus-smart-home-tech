@@ -11,6 +11,7 @@ import ru.yandex.practicum.model.Enum.ActionType;
 import ru.yandex.practicum.model.Enum.ConditionOperation;
 import ru.yandex.practicum.model.Enum.ConditionType;
 import ru.yandex.practicum.model.Scenario;
+import ru.yandex.practicum.model.Sensor;
 import ru.yandex.practicum.repository.ActionRepository;
 import ru.yandex.practicum.repository.ConditionRepository;
 import ru.yandex.practicum.repository.ScenarioRepository;
@@ -43,17 +44,17 @@ public class ScenarioAddedEventHandler implements HubEventHandler{
 
         Optional<Scenario> scenarioOpt = scenarioRepository.findByHubIdAndName(hubEventAvro.getHubId(), scenarioAddedEventAvro.getName());
 
-        if(scenarioOpt.isEmpty()) {
+        if (scenarioOpt.isEmpty()) {
             Scenario scenario = scenarioRepository.save(toScenario(hubEventAvro));
             log.info("сохраняем новый сценарий {} = ", scenario);
             if (checkSensors(getConditionsSensorIds(scenarioAddedEventAvro.getConditions()), hubEventAvro.getHubId())) {
-                conditionRepository.saveAll(toCondition(scenarioAddedEventAvro, scenario));
+                conditionRepository.saveAll(toCondition(scenarioAddedEventAvro, scenario, hubEventAvro.getHubId()));
             } else {
                 throw new RuntimeException("Не найдены сенсоры условий сценария");
             }
 
             if (checkSensors(getActionsSensorIds(scenarioAddedEventAvro.getActions()), hubEventAvro.getHubId())) {
-                actionRepository.saveAll(toAction(scenarioAddedEventAvro, scenario));
+                actionRepository.saveAll(toAction(scenarioAddedEventAvro, scenario, hubEventAvro.getHubId()));
             } else {
                 throw new RuntimeException("Не найдены сенсоры действий сценария");
             }
@@ -61,13 +62,13 @@ public class ScenarioAddedEventHandler implements HubEventHandler{
             Scenario scenario = scenarioOpt.get();
             log.info("достали сценарий {} = ", scenario);
             if (checkSensors(getConditionsSensorIds(scenarioAddedEventAvro.getConditions()), hubEventAvro.getHubId())) {
-                conditionRepository.saveAll(toCondition(scenarioAddedEventAvro, scenario));
+                conditionRepository.saveAll(toCondition(scenarioAddedEventAvro, scenario, hubEventAvro.getHubId()));
             } else {
                 throw new RuntimeException("Не найдены сенсоры условий сценария");
             }
 
             if (checkSensors(getActionsSensorIds(scenarioAddedEventAvro.getActions()), hubEventAvro.getHubId())) {
-                actionRepository.saveAll(toAction(scenarioAddedEventAvro, scenario));
+                actionRepository.saveAll(toAction(scenarioAddedEventAvro, scenario, hubEventAvro.getHubId()));
             } else {
                 throw new RuntimeException("Не найдены сенсоры действий сценария");
             }
@@ -75,13 +76,13 @@ public class ScenarioAddedEventHandler implements HubEventHandler{
 
     }
 
-    private Set<Condition> toCondition(ScenarioAddedEventAvro scenarioAddedEventAvro, Scenario scenario) {
+    private Set<Condition> toCondition(ScenarioAddedEventAvro scenarioAddedEventAvro, Scenario scenario, String hubId) {
         return scenarioAddedEventAvro
             .getConditions()
             .stream()
             .map(condition -> Condition
                 .builder()
-                .sensor(sensorRepository.findById(condition.getSensorId()).orElseThrow())
+                .sensor(sensorRepository.findByIdAndHubId(condition.getSensorId(), hubId).orElseThrow())
                 .scenario(scenario)
                 .type(toConditionType(condition.getType()))
                 .operation(toConditionOperation(condition.getOperation()))
@@ -90,13 +91,13 @@ public class ScenarioAddedEventHandler implements HubEventHandler{
             .collect(Collectors.toSet());
     }
 
-    private Set<Action> toAction(ScenarioAddedEventAvro scenarioAddedEventAvro, Scenario scenario) {
+    private Set<Action> toAction(ScenarioAddedEventAvro scenarioAddedEventAvro, Scenario scenario, String hubId) {
         return scenarioAddedEventAvro
             .getActions()
             .stream()
             .map(action -> Action
                 .builder()
-                .sensor(sensorRepository.findById(action.getSensorId()).orElseThrow())
+                .sensor(sensorRepository.findByIdAndHubId(action.getSensorId(), hubId).orElseThrow())
                 .scenario(scenario)
                 .type(toActionType(action.getType()))
                 .value(action.getValue())
