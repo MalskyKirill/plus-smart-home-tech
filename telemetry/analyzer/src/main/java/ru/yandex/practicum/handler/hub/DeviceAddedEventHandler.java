@@ -16,7 +16,7 @@ public class DeviceAddedEventHandler implements HubEventHandler {
     private final SensorRepository sensorRepository;
     @Override
     public String getType() {
-        return DeviceAddedEventAvro.class.getSimpleName();
+        return DeviceAddedEventAvro.class.getName();
     }
 
     @Override

@@ -22,8 +22,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SnapshotHandler {
     private final ScenarioRepository scenarioRepository;
-    private final ConditionRepository conditionRepository;
-    private final ActionRepository actionRepository;
     private final ScenarioActionProducer scenarioActionProducer;
     private final Map<String, SensorEventHandler> sensorEventHandlers;
 
@@ -31,12 +29,8 @@ public class SnapshotHandler {
         List<Scenario> scenarios = getScenariosBySnapshots(sensorsSnapshotAvro);
         log.info("найдены сценарии для выполнения {}", scenarios.size());
         for (Scenario scenario : scenarios) {
-            sendScenarioActions(scenario);
+            scenarioActionProducer.sendAction(scenario);
         }
-    }
-
-    private void sendScenarioActions(Scenario scenario) {
-        actionRepository.findAllByScenario(scenario).forEach(scenarioActionProducer::sendAction);
     }
 
     private List<Scenario> getScenariosBySnapshots(SensorsSnapshotAvro sensorsSnapshotAvro) {
@@ -44,12 +38,12 @@ public class SnapshotHandler {
         Map<String, SensorStateAvro> sensorStates = sensorsSnapshotAvro.getSensorsState();
         log.info("количество сценариев {} ", scenarios.size());
 
-        return scenarios.stream().filter(scenario -> checkConditions(scenario, sensorStates)).toList();
-
+        return scenarios.stream()
+            .filter(scenario -> checkConditions(scenario.getConditions(), sensorStates))
+            .toList();
     }
 
-    private boolean checkConditions(Scenario scenario, Map<String, SensorStateAvro> sensorStates) {
-        List<Condition> conditions = conditionRepository.findAllByScenario(scenario);
+    private boolean checkConditions(List<Condition> conditions, Map<String, SensorStateAvro> sensorStates) {
         log.info("условий {}", conditions.toString());
 
         return conditions.stream().allMatch(condition -> checkCondition(condition, sensorStates.get(condition.getSensor().getId())));
@@ -75,5 +69,6 @@ public class SnapshotHandler {
             case ConditionOperation.GREATER_THAN -> value > condition.getValue();
         };
     }
+
 }
 

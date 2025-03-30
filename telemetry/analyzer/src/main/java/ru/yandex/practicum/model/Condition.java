@@ -5,27 +5,37 @@ import lombok.*;
 import ru.yandex.practicum.model.Enum.ConditionOperation;
 import ru.yandex.practicum.model.Enum.ConditionType;
 
+import java.util.List;
+
 @Entity
 @Table(name = "conditions")
-@SecondaryTable(name = "scenario_conditions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "condition_id"))
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Condition {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "sensor_id", table = "scenario_conditions")
-    private Sensor sensor;
-    @ManyToOne
-    @JoinColumn(name = "scenario_id", table = "scenario_conditions")
-    private Scenario scenario;
+
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private ConditionType type;
+
+    @Column(name = "operation")
     @Enumerated(EnumType.STRING)
     private ConditionOperation operation;
+
+    @Column(name = "value")
     private Integer value;
+
+    @ManyToOne
+    @JoinColumn(name = "sensor_id")
+    private Sensor sensor;
+
+    @ManyToMany(mappedBy = "conditions")
+    private List<Scenario> scenarios;
+
 }

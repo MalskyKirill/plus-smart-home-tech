@@ -4,25 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.yandex.practicum.model.Enum.ActionType;
 
+import java.util.List;
+
 @Entity
 @Table(name = "actions")
-@SecondaryTable(name = "scenario_actions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "action_id"))
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Action {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "sensor_id", table = "scenario_actions")
-    private Sensor sensor;
-    @ManyToOne
-    @JoinColumn(name = "scenario_id", table = "scenario_actions")
-    private Scenario scenario;
+
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private ActionType type;
+
+    @Column(name = "value")
     private Integer value;
+
+    @ManyToOne
+    @JoinColumn(name = "sensor_id")
+    Sensor sensor;
+
+    @ManyToMany(mappedBy = "actions")
+    private List<Scenario> scenarios;
+
 }

@@ -9,10 +9,9 @@ import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 import ru.yandex.practicum.model.Action;
+import ru.yandex.practicum.model.Scenario;
 
 import java.time.Instant;
-
-
 
 @Slf4j
 @Service
@@ -24,7 +23,12 @@ public class ScenarioActionProducer {
         this.hubRouterStub = hubRouterStub;
     }
 
-    public void sendAction(Action action) {
+    public void sendAction(Scenario scenario) {
+        String hubId = scenario.getHubId();
+        String scenarioName = scenario.getName();
+        for (Action action : scenario.getActions()) {
+
+
         DeviceActionProto deviceActionProto = DeviceActionProto.newBuilder()
             .setSensorId(action.getSensor().getId())
             .setType(ActionTypeProto.valueOf(action.getType().name()))
@@ -39,16 +43,14 @@ public class ScenarioActionProducer {
             .build();
 
         DeviceActionRequest request = DeviceActionRequest.newBuilder()
-            .setHubId(action.getScenario().getHubId())
-            .setScenarioName(action.getScenario().getName())
+            .setHubId(hubId)
+            .setScenarioName(scenarioName)
             .setTimestamp(timestamp)
             .setAction(deviceActionProto)
             .build();
 
         hubRouterStub.handleDeviceAction(request);
         log.info("экшен {} отправлен в hub-router", request);
-
-
-
+        }
     }
 }
