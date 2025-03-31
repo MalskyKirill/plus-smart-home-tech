@@ -46,7 +46,7 @@ public class AggregationStarter {
                     Optional<SensorsSnapshotAvro> snapshotAvro = eventHandler.updateState(eventAvro);
                     log.info("Получили снимок состояния {}", snapshotAvro);
                     if (snapshotAvro.isPresent()) {
-                        log.info("запись снимка в топик Kafka");
+                        log.info("ожтидается запись снимка в топик Send: {}", snapshotAvro.get());
                         ProducerRecord<String, SpecificRecordBase> message = new ProducerRecord<>(
                             telemetrySnapshotTopic,
                             null,

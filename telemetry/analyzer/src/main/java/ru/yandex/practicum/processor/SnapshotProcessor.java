@@ -31,7 +31,7 @@ public class SnapshotProcessor {
                 ConsumerRecords<String, SensorsSnapshotAvro> records = snapshotConsumer.poll(CONSUME_ATTEMPT_TIMEOUT);
 
                 for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
-                    log.info("обрабатываем сообщение {}", record.value());
+                    log.info("{}: полученное сообщение из kafka: {}", SnapshotProcessor.class.getSimpleName(), record);
                     SensorsSnapshotAvro snapshotAvro = record.value();
                     log.info("снимок состояния умного дома: {}", snapshotAvro);
                     snapshotHandler.handleSnapshot(snapshotAvro);
@@ -51,3 +51,4 @@ public class SnapshotProcessor {
         }
     }
 }
+

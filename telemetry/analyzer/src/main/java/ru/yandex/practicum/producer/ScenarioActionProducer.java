@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
@@ -16,41 +17,45 @@ import java.time.Instant;
 @Slf4j
 @Service
 public class ScenarioActionProducer {
-    private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub;
+    @GrpcClient("hub-router")
+    private HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
 
-    public ScenarioActionProducer(
-        @GrpcClient("hub-router") HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub) {
-        this.hubRouterStub = hubRouterStub;
-    }
-
+    @Transactional
     public void sendAction(Scenario scenario) {
-        String hubId = scenario.getHubId();
-        String scenarioName = scenario.getName();
-        for (Action action : scenario.getActions()) {
+        try {
+            log.info("поступил сценарий {}", scenario);
+            String hubId = scenario.getHubId();
+            String scenarioName = scenario.getName();
+            for (Action action : scenario.getActions()) {
+                log.info("action {}", action);
+                DeviceActionProto deviceActionProto = DeviceActionProto.newBuilder()
+                    .setSensorId(action.getSensor().getId())
+                    .setType(ActionTypeProto.valueOf(action.getType().name()))
+                    .setValue(action.getValue())
+                    .build();
 
+                Instant instant = Instant.now();
 
-        DeviceActionProto deviceActionProto = DeviceActionProto.newBuilder()
-            .setSensorId(action.getSensor().getId())
-            .setType(ActionTypeProto.valueOf(action.getType().name()))
-            .setValue(action.getValue())
-            .build();
+                Timestamp timestamp = Timestamp.newBuilder()
+                    .setSeconds(instant.getEpochSecond())
+                    .setNanos(instant.getNano())
+                    .build();
 
-        Instant instant = Instant.now();
+                DeviceActionRequest request = DeviceActionRequest.newBuilder()
+                    .setHubId(hubId)
+                    .setScenarioName(scenarioName)
+                    .setTimestamp(timestamp)
+                    .setAction(deviceActionProto)
+                    .build();
+                log.info("request {}", request);
 
-        Timestamp timestamp = Timestamp.newBuilder()
-            .setSeconds(instant.getEpochSecond())
-            .setNanos(instant.getNano())
-            .build();
+                hubRouterClient.handleDeviceAction(request);
+                log.info("экшен {} отправлен в hub-router", request);
+            }
 
-        DeviceActionRequest request = DeviceActionRequest.newBuilder()
-            .setHubId(hubId)
-            .setScenarioName(scenarioName)
-            .setTimestamp(timestamp)
-            .setAction(deviceActionProto)
-            .build();
-
-        hubRouterStub.handleDeviceAction(request);
-        log.info("экшен {} отправлен в hub-router", request);
+        } catch (Exception e) {
+            log.error("Ошибка при отправке действия: {}", e.getMessage(), e);
+            throw e;
         }
     }
 }
