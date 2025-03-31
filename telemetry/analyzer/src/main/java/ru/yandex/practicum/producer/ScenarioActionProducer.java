@@ -23,11 +23,11 @@ public class ScenarioActionProducer {
     @Transactional
     public void sendAction(Scenario scenario) {
         try {
-            log.info("поступил сценарий {}", scenario);
+            log.info("поступил сценарий {}", scenario.getName());
             String hubId = scenario.getHubId();
             String scenarioName = scenario.getName();
             for (Action action : scenario.getActions()) {
-                log.info("action {}", action);
+                log.info("action {}", action.getId());
                 DeviceActionProto deviceActionProto = DeviceActionProto.newBuilder()
                     .setSensorId(action.getSensor().getId())
                     .setType(ActionTypeProto.valueOf(action.getType().name()))
@@ -47,10 +47,10 @@ public class ScenarioActionProducer {
                     .setTimestamp(timestamp)
                     .setAction(deviceActionProto)
                     .build();
-                log.info("request {}", request);
+                log.info("request {}", request.getScenarioName());
 
                 hubRouterClient.handleDeviceAction(request);
-                log.info("экшен {} отправлен в hub-router", request);
+                log.info("экшен {} отправлен в hub-router", request.getScenarioName());
             }
 
         } catch (Exception e) {

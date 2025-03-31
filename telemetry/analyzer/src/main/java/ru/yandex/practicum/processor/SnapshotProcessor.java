@@ -33,7 +33,7 @@ public class SnapshotProcessor {
                 for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
                     log.info("{}: полученное сообщение из kafka: {}", SnapshotProcessor.class.getSimpleName(), record);
                     SensorsSnapshotAvro snapshotAvro = record.value();
-                    log.info("снимок состояния умного дома: {}", snapshotAvro);
+                    log.info("снимок состояния умного дома: {}", snapshotAvro.getClass().getName());
                     snapshotHandler.handleSnapshot(snapshotAvro);
                 }
 

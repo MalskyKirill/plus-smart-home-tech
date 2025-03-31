@@ -44,7 +44,7 @@ public class HubEventProcessor implements Runnable{
                     HubEventAvro hubEvent = record.value();
                     String payload = hubEvent.getPayload().getClass().getName();
                     log.info("получили сообщение хаба типа: {}", payload);
-                    System.out.println(hubHandlers);
+
                     if (hubHandlers.containsKey(payload)) {
                         hubHandlers.get(payload).handle(hubEvent);
                     } else {

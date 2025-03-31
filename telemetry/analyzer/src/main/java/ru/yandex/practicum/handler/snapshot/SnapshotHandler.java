@@ -50,9 +50,9 @@ public class SnapshotHandler {
     private List<Scenario> getScenariosBySnapshots(SensorsSnapshotAvro sensorsSnapshotAvro) {
         log.info("хаб {}",sensorsSnapshotAvro.getHubId());
         List<Scenario> scenarios = scenarioRepository.findByHubId(sensorsSnapshotAvro.getHubId());
-        log.info("сценарии {}", scenarios);
+        log.info("сценарии {}", scenarios.toString());
         Map<String, SensorStateAvro> sensorStates = sensorsSnapshotAvro.getSensorsState();
-        log.info("состояния {}", sensorStates);
+        log.info("состояния {}", sensorStates.toString());
         log.info("количество сценариев {} ", scenarios.size());
 
         return scenarios.stream()
@@ -65,6 +65,7 @@ public class SnapshotHandler {
         log.info("условий {}", conditions.toString());
 
         return conditions.stream().allMatch(condition -> {
+            log.info("id {}", condition.getSensor().getId());
             log.info("avro {}", sensorStates.get(condition.getSensor().getId()));
             return checkCondition(condition, sensorStates.get(condition.getSensor().getId()));
         });
