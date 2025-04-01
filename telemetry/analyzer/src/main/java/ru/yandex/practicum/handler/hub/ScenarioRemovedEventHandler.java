@@ -18,7 +18,7 @@ public class ScenarioRemovedEventHandler implements HubEventHandler {
 
     @Override
     public String getType() {
-        return ScenarioRemovedEventAvro.class.getSimpleName();
+        return ScenarioRemovedEventAvro.class.getName();
     }
 
 

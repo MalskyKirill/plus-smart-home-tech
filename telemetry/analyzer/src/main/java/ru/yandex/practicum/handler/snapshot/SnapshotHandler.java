@@ -37,7 +37,6 @@ public class SnapshotHandler {
             ));
     }
 
-    @Transactional
     public void handleSnapshot(SensorsSnapshotAvro sensorsSnapshotAvro) {
         List<Scenario> scenarios = getScenariosBySnapshots(sensorsSnapshotAvro);
         log.info("найдены сценарии для выполнения {}", scenarios.size());
@@ -46,11 +45,9 @@ public class SnapshotHandler {
         }
     }
 
-    @Transactional
     private List<Scenario> getScenariosBySnapshots(SensorsSnapshotAvro sensorsSnapshotAvro) {
         log.info("хаб {}",sensorsSnapshotAvro.getHubId());
         List<Scenario> scenarios = scenarioRepository.findByHubId(sensorsSnapshotAvro.getHubId());
-        log.info("сценарии {}", scenarios.toString());
         Map<String, SensorStateAvro> sensorStates = sensorsSnapshotAvro.getSensorsState();
         log.info("состояния {}", sensorStates.toString());
         log.info("количество сценариев {} ", scenarios.size());
@@ -60,9 +57,8 @@ public class SnapshotHandler {
             .toList();
     }
 
-    @Transactional
     private boolean checkConditions(List<Condition> conditions, Map<String, SensorStateAvro> sensorStates) {
-        log.info("условий {}", conditions.toString());
+        log.info("условий {}", conditions.size());
 
         return conditions.stream().allMatch(condition -> {
             log.info("id {}", condition.getSensor().getId());
@@ -71,7 +67,6 @@ public class SnapshotHandler {
         });
     }
 
-    @Transactional
     private boolean checkCondition(Condition condition, SensorStateAvro sensorStateAvro) {
         String type = sensorStateAvro.getData().getClass().getTypeName();
         if (!sensorEventHandlers.containsKey(type)) {

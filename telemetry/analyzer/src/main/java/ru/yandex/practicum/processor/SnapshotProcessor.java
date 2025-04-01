@@ -28,16 +28,21 @@ public class SnapshotProcessor {
             Runtime.getRuntime().addShutdownHook(new Thread(snapshotConsumer::wakeup));
 
             while (true) {
-                ConsumerRecords<String, SensorsSnapshotAvro> records = snapshotConsumer.poll(CONSUME_ATTEMPT_TIMEOUT);
+                try {
+                    ConsumerRecords<String, SensorsSnapshotAvro> records = snapshotConsumer.poll(CONSUME_ATTEMPT_TIMEOUT);
 
-                for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
-                    log.info("{}: полученное сообщение из kafka: {}", SnapshotProcessor.class.getSimpleName(), record);
-                    SensorsSnapshotAvro snapshotAvro = record.value();
-                    log.info("снимок состояния умного дома: {}", snapshotAvro.getClass().getName());
-                    snapshotHandler.handleSnapshot(snapshotAvro);
+                    for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
+                        log.info("{}: полученное сообщение из kafka: {}", SnapshotProcessor.class.getSimpleName(), record);
+                        SensorsSnapshotAvro snapshotAvro = record.value();
+                        log.info("снимок состояния умного дома: {}", snapshotAvro.getClass().getName());
+                        snapshotHandler.handleSnapshot(snapshotAvro);
+                    }
+
+                    snapshotConsumer.commitSync();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
                 }
 
-                snapshotConsumer.commitSync();
             }
         } catch (WakeupException ignored) {
         } catch (Exception e) {
