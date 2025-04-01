@@ -61,9 +61,14 @@ public class SnapshotHandler {
         log.info("условий {}", conditions.size());
 
         return conditions.stream().allMatch(condition -> {
-            log.info("id {}", condition.getSensor().getId());
-            log.info("avro {}", sensorStates.get(condition.getSensor().getId()));
-            return checkCondition(condition, sensorStates.get(condition.getSensor().getId()));
+            try {
+                log.info("id {}", condition.getSensor().getId());
+                log.info("avro {}", sensorStates.get(condition.getSensor().getId()));
+                return checkCondition(condition, sensorStates.get(condition.getSensor().getId()));
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+            return false;
         });
     }
 

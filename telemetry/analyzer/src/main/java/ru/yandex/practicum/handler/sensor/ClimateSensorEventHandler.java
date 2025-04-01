@@ -17,8 +17,8 @@ public class ClimateSensorEventHandler implements SensorEventHandler{
         ClimateSensorAvro climateSensorAvro = (ClimateSensorAvro) sensorStateAvro.getData();
         return switch (type) {
             case ConditionType.TEMPERATURE -> climateSensorAvro.getTemperatureC();
-            case ConditionType.CO2LEVEL -> climateSensorAvro.getCo2Level();
             case ConditionType.HUMIDITY -> climateSensorAvro.getHumidity();
+            case ConditionType.CO2LEVEL -> climateSensorAvro.getCo2Level();
             default -> null;
         };
     }
