@@ -22,6 +22,7 @@ public class KafkaProducerConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaPropertiesConfig.getBootstrapService());
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, kafkaPropertiesConfig.getProducerKeySerializer());
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, kafkaPropertiesConfig.getProducerValueSerializer());
+        config.put("charset", "UTF-8");
 
         return new KafkaProducer<>(config);
     }
