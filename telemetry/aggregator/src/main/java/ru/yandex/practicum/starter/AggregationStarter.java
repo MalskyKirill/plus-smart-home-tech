@@ -27,10 +27,10 @@ public class AggregationStarter {
     private final Producer<String, SpecificRecordBase> producer;
     private final Consumer<String, SpecificRecordBase> consumer;
     private final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-    @Value("${kafka.telemetry-sensors-topic}")
-    private String telemetrySensorsTopic;
-    @Value("${kafka.telemetry-snapshots-topic}")
-    private String telemetrySnapshotTopic;
+
+    private String telemetrySensorsTopic = "telemetry.sensors.v1";
+
+    private String telemetrySnapshotTopic = "telemetry.snapshots.v1";
 
     public void start() {
 
