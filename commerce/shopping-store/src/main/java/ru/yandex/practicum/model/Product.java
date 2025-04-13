@@ -23,6 +23,7 @@ public class Product {
     private UUID productId;
     @Column(name = "product_name")
     private String productName;
+    private String description;
     @Column(name = "image_src")
     private String imageSrc;
     @Column(name = "quantity_state")
@@ -34,5 +35,5 @@ public class Product {
     @Column(name = "product_category")
     @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
-    private Double price;
+    private Float price;
 }
