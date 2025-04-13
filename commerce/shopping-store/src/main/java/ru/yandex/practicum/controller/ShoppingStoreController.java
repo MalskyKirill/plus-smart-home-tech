@@ -3,12 +3,11 @@ package ru.yandex.practicum.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.ProductDto;
 import ru.yandex.practicum.service.ShoppingStoreService;
+
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -19,8 +18,14 @@ public class ShoppingStoreController {
 
     @PutMapping
     public ProductDto createProduct(@Valid @RequestBody ProductDto productDto) {
-        log.info("GET-запрос к эндпоинту: '/api/v1/shopping-store' на создание товара c productName = {}", productDto.getProductName());
+        log.info("PUT-запрос к эндпоинту: '/api/v1/shopping-store' на создание товара c productName = {}", productDto.getProductName());
         return shoppingStoreService.create(productDto);
+    }
+
+    @GetMapping("/productId")
+    public ProductDto getProductById(@PathVariable UUID productId) {
+        log.info("GET-запрос к эндпоинту: '/api/v1/shopping-store/productId' на получение товара c productId = {}", productId);
+        return shoppingStoreService.getProduct(productId);
     }
 
 }
