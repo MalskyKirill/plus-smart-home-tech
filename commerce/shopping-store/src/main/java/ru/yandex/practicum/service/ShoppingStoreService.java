@@ -8,4 +8,6 @@ public interface ShoppingStoreService {
     ProductDto create(ProductDto productDto);
 
     ProductDto getProduct(UUID productId);
+
+    ProductDto update(ProductDto productDto);
 }

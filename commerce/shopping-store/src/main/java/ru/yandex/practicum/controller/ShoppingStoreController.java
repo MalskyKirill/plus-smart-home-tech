@@ -22,10 +22,16 @@ public class ShoppingStoreController {
         return shoppingStoreService.create(productDto);
     }
 
-    @GetMapping("/productId")
+    @GetMapping("/{productId}")
     public ProductDto getProductById(@PathVariable UUID productId) {
         log.info("GET-запрос к эндпоинту: '/api/v1/shopping-store/productId' на получение товара c productId = {}", productId);
         return shoppingStoreService.getProduct(productId);
+    }
+
+    @PostMapping
+    public ProductDto updateProduct(@RequestBody ProductDto productDto) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/shopping-store' на обновление товара c productName = {}", productDto.getProductName());
+        return shoppingStoreService.update(productDto);
     }
 
 }
