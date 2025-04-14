@@ -10,4 +10,6 @@ public interface ShoppingStoreService {
     ProductDto getProduct(UUID productId);
 
     ProductDto update(ProductDto productDto);
+
+    boolean delete(UUID productId);
 }

@@ -34,4 +34,10 @@ public class ShoppingStoreController {
         return shoppingStoreService.update(productDto);
     }
 
+    @PostMapping("/removeProductFromStore")
+    public boolean deleteProduct(@RequestBody UUID productId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/shopping-store/removeProductFromStore' на удаление товара c productId = {}", productId);
+        return shoppingStoreService.delete(productId);
+    }
+
 }

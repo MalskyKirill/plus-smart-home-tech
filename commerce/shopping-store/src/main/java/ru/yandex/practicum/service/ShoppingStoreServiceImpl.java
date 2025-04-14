@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.ProductDto;
+import ru.yandex.practicum.dto.enums.ProductState;
 import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.mapper.ProductMapper;
 import ru.yandex.practicum.model.Product;
@@ -40,6 +41,21 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
         Product updateProduct = productRepository.save(ProductMapper.toProduct(productDto));
         log.info("обнавляем товар в базе данных");
         return ProductMapper.toProductDto(updateProduct);
+    }
+
+    @Override
+    @Transactional
+    public boolean delete(UUID productId) {
+        Product oldProduct = findProductById(productId);
+
+        if (oldProduct.getProductState().equals(ProductState.DEACTIVATE)) {
+            log.info("продукт уже удален");
+            return false;
+        }
+
+        log.info("удаляем продукт");
+        oldProduct.setProductState(ProductState.DEACTIVATE);
+        return true;
     }
 
 
