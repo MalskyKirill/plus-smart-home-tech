@@ -1,7 +1,6 @@
 package ru.yandex.practicum.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -56,5 +55,4 @@ public class ShoppingStoreController {
         log.info("GET-запрос к эндпоинту: '/api/v1/shopping-store' на получение списка товаров по типу {} в пагинированном виде", category);
         return shoppingStoreService.getProducts(category, pageable);
     }
-
 }
