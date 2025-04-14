@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.ProductDto;
+import ru.yandex.practicum.dto.SetProductQuantityStateRequest;
 import ru.yandex.practicum.dto.enums.ProductState;
 import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.mapper.ProductMapper;
@@ -55,6 +56,21 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
         log.info("удаляем продукт");
         oldProduct.setProductState(ProductState.DEACTIVATE);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean setQuantityState(SetProductQuantityStateRequest request) {
+        Product oldProduct = findProductById(request.getProductId());
+
+        if (oldProduct.getQuantityState().equals(request.getQuantityState())) {
+            log.info("количество не поменялось");
+            return false;
+        }
+
+        oldProduct.setQuantityState(request.getQuantityState());
+        productRepository.save(oldProduct);
         return true;
     }
 

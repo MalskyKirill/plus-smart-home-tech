@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.ProductDto;
+import ru.yandex.practicum.dto.SetProductQuantityStateRequest;
 import ru.yandex.practicum.service.ShoppingStoreService;
 
 import java.util.UUID;
@@ -38,6 +39,12 @@ public class ShoppingStoreController {
     public boolean deleteProduct(@RequestBody UUID productId) {
         log.info("POST-запрос к эндпоинту: '/api/v1/shopping-store/removeProductFromStore' на удаление товара c productId = {}", productId);
         return shoppingStoreService.delete(productId);
+    }
+
+    @PostMapping("/quantityState")
+    public boolean setProductQuantityState(@Valid @RequestBody SetProductQuantityStateRequest request) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/shopping-store/quantityState' на изменение количества товара c productId = {}", request.getProductId());
+        return shoppingStoreService.setQuantityState(request);
     }
 
 }
