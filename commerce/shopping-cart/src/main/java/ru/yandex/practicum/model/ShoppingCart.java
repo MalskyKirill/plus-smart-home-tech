@@ -2,6 +2,7 @@ package ru.yandex.practicum.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.yandex.practicum.dto.enums.ShoppingCartState;
 
 import java.util.Map;
 import java.util.UUID;
@@ -18,12 +19,14 @@ public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cart_id")
-    UUID cardId;
+    private UUID cardId;
     @Column(name = "user_name")
-    String userName;
+    private String userName;
     @ElementCollection
     @CollectionTable(name = "cart_products", joinColumns = @JoinColumn(name = "cart_id"))
     @MapKeyColumn(name = "product_id")
     @Column(name = "quantity")
-    Map<UUID, Long> products;
+    private Map<UUID, Long> products;
+    @Enumerated(value = EnumType.STRING)
+    private ShoppingCartState state;
 }
