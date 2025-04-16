@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.ShoppingCartDto;
+import ru.yandex.practicum.dto.enums.ShoppingCartState;
 import ru.yandex.practicum.exeption.MissingUsernameException;
 import ru.yandex.practicum.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.model.ShoppingCart;
@@ -40,6 +41,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private ShoppingCart getNewShoppingCart(String username) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUserName(username);
+        shoppingCart.setState(ShoppingCartState.ACTIVE);
         return shoppingCart;
     }
 
