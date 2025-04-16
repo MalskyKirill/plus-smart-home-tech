@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.AddProductToWarehouseRequestDto;
 import ru.yandex.practicum.dto.NewProductInWarehouseRequestDto;
+import ru.yandex.practicum.dto.WarehouseAddressDto;
 import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.exeption.ProductAlreadyExistException;
 import ru.yandex.practicum.mapper.WarehouseProductMapper;
@@ -36,6 +37,18 @@ public class WarehouseServiceImpl implements WarehouseService {
         warehouseProduct.setQuantity(newQuantity);
         log.info("теперь товара на складе {}шт", warehouseProduct.getQuantity());
         warehouseRepository.save(warehouseProduct);
+    }
+
+    @Override
+    public WarehouseAddressDto getAddress() {
+        String warehouseAddress = AddressService.getAddress();
+        return WarehouseAddressDto.builder()
+            .country(warehouseAddress)
+            .city(warehouseAddress)
+            .street(warehouseAddress)
+            .house(warehouseAddress)
+            .flat(warehouseAddress)
+            .build();
     }
 
     private WarehouseProduct getWarehouseProduct(UUID productId) {
