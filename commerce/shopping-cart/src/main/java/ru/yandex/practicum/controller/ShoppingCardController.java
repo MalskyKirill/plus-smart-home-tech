@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.ShoppingCartDto;
 import ru.yandex.practicum.service.ShoppingCartService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,5 +34,11 @@ public class ShoppingCardController {
     public void deactivateShoppingCartByUser (@RequestParam String username) {
         log.info("DELETE-запрос к эндпоинту: '/api/v1/shopping-cart' на деактивацию корзины товаров для пользователя");
         shoppingCartService.deactivateShoppingCart(username);
+    }
+
+    @PostMapping("/remove")
+    public ShoppingCartDto removeProductFromShoppingCart (@RequestParam String username, @RequestBody List<UUID> products) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/shopping-cart/remove' на удаление товаров из корзины");
+        return shoppingCartService.remove(username, products);
     }
 }
