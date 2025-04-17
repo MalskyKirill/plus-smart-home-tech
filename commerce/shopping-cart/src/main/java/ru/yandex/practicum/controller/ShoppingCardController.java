@@ -28,4 +28,10 @@ public class ShoppingCardController {
         log.info("GET-запрос к эндпоинту: '/api/v1/shopping-cart' на получение актуальной корзину для авторизованного пользователя");
         return shoppingCartService.getShoppingCart(username);
     }
+
+    @DeleteMapping
+    public void deactivateShoppingCartByUser (@RequestParam String username) {
+        log.info("DELETE-запрос к эндпоинту: '/api/v1/shopping-cart' на деактивацию корзины товаров для пользователя");
+        shoppingCartService.deactivateShoppingCart(username);
+    }
 }

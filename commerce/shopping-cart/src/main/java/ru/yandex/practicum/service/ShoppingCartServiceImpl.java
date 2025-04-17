@@ -49,6 +49,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return ShoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
+    @Override
+    @Transactional
+    public void deactivateShoppingCart(String username) {
+        checkUserName(username);
+
+        ShoppingCart shoppingCart = getShoppingCartByUsername(username);
+        log.info("деактивируем корзину с id {}", shoppingCart.getCardId());
+        shoppingCart.setState(ShoppingCartState.DEACTIVATE);
+    }
+
     private ShoppingCart getNewShoppingCart(String username) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUserName(username);
@@ -60,5 +70,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if(username.isBlank()) {
             throw new MissingUsernameException("отсутствует имя пользователя");
         }
+    }
+
+    private ShoppingCart getShoppingCartByUsername(String username) {
+        return shoppingCartRepository.findByUserNameAndState(username, ShoppingCartState.ACTIVE)
+            .orElseThrow(() -> new NotFoundException("у пользователя отсутствует актуальная карзина"));
     }
 }
