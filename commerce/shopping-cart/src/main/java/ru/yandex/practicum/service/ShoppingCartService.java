@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface ShoppingCartService {
     ShoppingCartDto addProducts(String username, Map<UUID, Long> products);
+
+    ShoppingCartDto getShoppingCart(String username);
 }

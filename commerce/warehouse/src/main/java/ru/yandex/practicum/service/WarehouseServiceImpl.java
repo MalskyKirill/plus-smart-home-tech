@@ -3,6 +3,7 @@ package ru.yandex.practicum.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.AddProductToWarehouseRequestDto;
 import ru.yandex.practicum.dto.NewProductInWarehouseRequestDto;
 import ru.yandex.practicum.dto.WarehouseAddressDto;
@@ -19,7 +20,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
+
     @Override
+    @Transactional
     public void addNewProduct(NewProductInWarehouseRequestDto requestProductDto) {
         if (warehouseRepository.existsById(requestProductDto.getProductId())) {
             throw new ProductAlreadyExistException("товар с таким id уже зарегистрирован на складе");
@@ -30,6 +33,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    @Transactional
     public void addQuantity(AddProductToWarehouseRequestDto requestQuantityDto) {
         WarehouseProduct warehouseProduct = getWarehouseProduct(requestQuantityDto.getProductId());
 

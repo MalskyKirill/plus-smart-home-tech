@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.ShoppingCartDto;
 import ru.yandex.practicum.dto.enums.ShoppingCartState;
 import ru.yandex.practicum.exeption.MissingUsernameException;
+import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.model.ShoppingCart;
 import ru.yandex.practicum.repository.ShoppingCartRepository;
@@ -26,7 +27,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto addProducts(String username, Map<UUID, Long> products) {
         checkUserName(username);
 
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserName(username).orElse(getNewShoppingCart(username));
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserNameAndState(username, ShoppingCartState.ACTIVE).orElse(getNewShoppingCart(username));
 
         Map<UUID, Long> mapProducts = new HashMap<>();
         if (shoppingCart.getProducts() != null && !shoppingCart.getProducts().isEmpty()) {
@@ -36,6 +37,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         mapProducts.putAll(products);
         shoppingCart.setProducts(mapProducts);
         return ShoppingCartMapper.toShoppingCartDto(shoppingCartRepository.save(shoppingCart));
+    }
+
+    @Override
+    public ShoppingCartDto getShoppingCart(String username) {
+        checkUserName(username);
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserNameAndState(username, ShoppingCartState.ACTIVE)
+            .orElseThrow(() -> new NotFoundException("у пользователя нет активной карзины"));
+
+        log.info("возвращаем корзину пользователя");
+        return ShoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
     private ShoppingCart getNewShoppingCart(String username) {

@@ -22,4 +22,10 @@ public class ShoppingCardController {
         log.info("PUT-запрос к эндпоинту: '/api/v1/shopping-cart' на добавление товара в корзину");
         return shoppingCartService.addProducts(username, products);
     }
+
+    @GetMapping
+    public ShoppingCartDto getActualShoppingCartByUser (@RequestParam String username) {
+        log.info("GET-запрос к эндпоинту: '/api/v1/shopping-cart' на получение актуальной корзину для авторизованного пользователя");
+        return shoppingCartService.getShoppingCart(username);
+    }
 }
