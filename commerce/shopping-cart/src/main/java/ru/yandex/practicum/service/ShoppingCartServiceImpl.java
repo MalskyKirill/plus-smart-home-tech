@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.dto.ChangeProductQuantityRequestDto;
 import ru.yandex.practicum.dto.ShoppingCartDto;
 import ru.yandex.practicum.dto.enums.ShoppingCartState;
 import ru.yandex.practicum.exeption.MissingUsernameException;
@@ -61,6 +62,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartDto remove(String username, List<UUID> products) {
         checkUserName(username);
 
@@ -73,6 +75,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         log.info("сохраняем корзину {}", shoppingCart.getCardId());
         ShoppingCart newShoppingCart = shoppingCartRepository.save(shoppingCart);
+        return ShoppingCartMapper.toShoppingCartDto(newShoppingCart);
+    }
+
+    @Override
+    @Transactional
+    public ShoppingCartDto changeQuantity(String username, ChangeProductQuantityRequestDto requestDto) {
+        checkUserName(username);
+        ShoppingCart shoppingCart = getShoppingCartByUsername(username);
+
+        if (!shoppingCart.getProducts().containsKey(requestDto.getProductId())) {
+            throw new NotFoundException("в корзине нет продуктов на обновление количества");
+        }
+
+        shoppingCart.getProducts().put(requestDto.getProductId(), requestDto.getNewQuantity());
+        log.info("обновляем количество продукта {} в корзине", requestDto.getProductId());
+        ShoppingCart newShoppingCart = shoppingCartRepository.save(shoppingCart);
+
         return ShoppingCartMapper.toShoppingCartDto(newShoppingCart);
     }
 
