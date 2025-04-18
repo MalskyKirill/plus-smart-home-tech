@@ -1,9 +1,11 @@
 package ru.yandex.practicum.service;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.ChangeProductQuantityRequestDto;
 import ru.yandex.practicum.dto.ShoppingCartDto;
 import ru.yandex.practicum.dto.enums.ShoppingCartState;
@@ -23,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
+    private final WarehouseClient warehouseClient;
 
     @Override
     @Transactional
@@ -36,9 +39,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             mapProducts.putAll(shoppingCart.getProducts());
         }
 
+        log.info("добавляем продукты в корзину");
         mapProducts.putAll(products);
         shoppingCart.setProducts(mapProducts);
+
+        log.info("сохроняем карзину");
+        ShoppingCartDto shoppingCartDto = ShoppingCartMapper.toShoppingCartDto(shoppingCart);
+
+        log.info("проверяем наличие товара на складе");
+        try {
+            warehouseClient.checkProductsQuantity(shoppingCartDto);
+            log.info("проверка количества товара на складе прошла успешно");
+        } catch (FeignException ex) {
+            log.error("ошибка при проверке количества товара на складе");
+            throw ex;
+        }
+
         return ShoppingCartMapper.toShoppingCartDto(shoppingCartRepository.save(shoppingCart));
+
     }
 
     @Override

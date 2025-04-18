@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.client.WarehouseClient;
-import ru.yandex.practicum.dto.AddProductToWarehouseRequestDto;
-import ru.yandex.practicum.dto.NewProductInWarehouseRequestDto;
-import ru.yandex.practicum.dto.WarehouseAddressDto;
+import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.service.WarehouseService;
 
 @RestController
@@ -33,6 +31,12 @@ public class WarehouseController implements WarehouseClient {
     public WarehouseAddressDto getWarehouseAddress() {
         log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/address' на получение адреса склада для расчёта доставки");
         return warehouseService.getAddress();
+    }
+
+    @Override
+    public BookedProductsDto checkProductsQuantity(ShoppingCartDto shoppingCartDto) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/check' для проверки количества товара на складе");
+        return warehouseService.checkQuantity(shoppingCartDto);
     }
 
 }

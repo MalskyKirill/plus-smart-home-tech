@@ -18,4 +18,10 @@ public class ErrorHandler {
     public ErrorResponse handleNotFoundException(final NotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInsufficientProductException(final InsufficientProductException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
 }

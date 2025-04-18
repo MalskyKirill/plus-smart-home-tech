@@ -1,14 +1,13 @@
 package ru.yandex.practicum.client;
 
+import feign.FeignException;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.dto.AddProductToWarehouseRequestDto;
-import ru.yandex.practicum.dto.NewProductInWarehouseRequestDto;
-import ru.yandex.practicum.dto.WarehouseAddressDto;
+import ru.yandex.practicum.dto.*;
 
 @FeignClient(name = "warehouse")
 public interface WarehouseClient {
@@ -20,4 +19,7 @@ public interface WarehouseClient {
 
     @GetMapping("/address")
     public WarehouseAddressDto getWarehouseAddress();
+
+    @PostMapping("/check")
+    BookedProductsDto checkProductsQuantity(@RequestBody ShoppingCartDto shoppingCartDto) throws FeignException;
 }
