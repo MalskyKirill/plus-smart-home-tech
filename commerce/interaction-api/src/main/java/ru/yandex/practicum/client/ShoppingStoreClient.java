@@ -1,4 +1,4 @@
-package client;
+package ru.yandex.practicum.client;
 
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;

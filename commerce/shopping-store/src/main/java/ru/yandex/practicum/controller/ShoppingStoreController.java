@@ -1,6 +1,6 @@
 package ru.yandex.practicum.controller;
 
-import client.ShoppingStoreClient;
+import ru.yandex.practicum.client.ShoppingStoreClient;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

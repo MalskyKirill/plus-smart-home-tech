@@ -1,6 +1,6 @@
 package ru.yandex.practicum.controller;
 
-import client.ShoppingCartClient;
+import ru.yandex.practicum.client.ShoppingCartClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
