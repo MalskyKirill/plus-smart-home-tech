@@ -46,7 +46,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
         productRepository.deleteById(oldProduct.getProductId());
 
         Product updateProduct = productRepository.save(ProductMapper.toProduct(productDto));
-        log.info("обнавляем товар в базе данных");
+        log.info("обновляем товар в базе данных");
         return ProductMapper.toProductDto(updateProduct);
     }
 

@@ -43,7 +43,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         mapProducts.putAll(products);
         shoppingCart.setProducts(mapProducts);
 
-        log.info("сохроняем карзину");
+        log.info("сохроняем корзину");
         ShoppingCartDto shoppingCartDto = ShoppingCartMapper.toShoppingCartDto(shoppingCart);
 
         log.info("проверяем наличие товара на складе");
@@ -63,7 +63,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto getShoppingCart(String username) {
         checkUserName(username);
         ShoppingCart shoppingCart = shoppingCartRepository.findByUserNameAndState(username, ShoppingCartState.ACTIVE)
-            .orElseThrow(() -> new NotFoundException("у пользователя нет активной карзины"));
+            .orElseThrow(() -> new NotFoundException("у пользователя нет активной корзины"));
 
         log.info("возвращаем корзину пользователя");
         return ShoppingCartMapper.toShoppingCartDto(shoppingCart);
@@ -128,6 +128,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private ShoppingCart getShoppingCartByUsername(String username) {
         return shoppingCartRepository.findByUserNameAndState(username, ShoppingCartState.ACTIVE)
-            .orElseThrow(() -> new NotFoundException("у пользователя отсутствует актуальная карзина"));
+            .orElseThrow(() -> new NotFoundException("у пользователя отсутствует актуальная корзина"));
     }
 }
