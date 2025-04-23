@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.dto.*;
 
-@FeignClient(name = "warehouse")
+@FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface WarehouseClient {
     @PutMapping
     public void addNewProductInWarehouse(@Valid @RequestBody NewProductInWarehouseRequestDto requestProductDto);
