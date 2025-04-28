@@ -14,7 +14,9 @@ import ru.yandex.practicum.mapper.OrderMapper;
 import ru.yandex.practicum.model.Order;
 import ru.yandex.practicum.repository.OrderRepository;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -45,6 +47,15 @@ public class OrderServiceImpl implements OrderService{
             log.error("ошибка при проверке количества товара на складе");
             throw ex;
         }
+    }
+
+    @Override
+    public List<OrderDto> get(String username) {
+        log.info("получаем все заказы пользователя");
+
+        List<Order> orders = orderRepository.findAllByUserName(username);
+
+        return orders.stream().map(OrderMapper::toOrderDto).collect(Collectors.toList());
     }
 
     private UUID getDeliveryId(UUID orderId, AddressDto addressDto) {

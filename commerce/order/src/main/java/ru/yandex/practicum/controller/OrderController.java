@@ -9,6 +9,8 @@ import ru.yandex.practicum.dto.CreateNewOrderRequestDto;
 import ru.yandex.practicum.dto.OrderDto;
 import ru.yandex.practicum.service.OrderService;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -20,5 +22,11 @@ public class OrderController implements OrderClient {
     public OrderDto createNewOrder(CreateNewOrderRequestDto requestDto) {
         log.info("PUT-запрос к эндпоинту: '/api/v1/order' на создание нового заказа");
         return orderService.create(requestDto);
+    }
+
+    @Override
+    public List<OrderDto> getOrdersByUser(String username) {
+        log.info("GET-запрос к эндпоинту: '/api/v1/order' на получение заказов пользователя");
+        return orderService.get(username);
     }
 }
