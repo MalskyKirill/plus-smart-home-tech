@@ -9,6 +9,6 @@ import java.util.UUID;
 @Data
 @Builder
 public class ShoppingCartDto {
-    private UUID cardId;
+    private UUID cartId;
     private Map<UUID, Long> products;
 }

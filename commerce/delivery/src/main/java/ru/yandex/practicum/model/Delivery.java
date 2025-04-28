@@ -26,6 +26,7 @@ public class Delivery {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "to_address_id")
     private Address toAddress;
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "state")
     private DeliveryState deliveryState;
     @Column(name = "delivery_weight")

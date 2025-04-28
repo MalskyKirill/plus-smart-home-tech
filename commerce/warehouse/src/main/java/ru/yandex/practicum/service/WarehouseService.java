@@ -7,7 +7,7 @@ public interface WarehouseService {
 
     void addQuantity(AddProductToWarehouseRequestDto requestQuantityDto);
 
-    WarehouseAddressDto getAddress();
+    AddressDto getAddress();
 
     BookedProductsDto checkQuantity(ShoppingCartDto shoppingCartDto);
 }

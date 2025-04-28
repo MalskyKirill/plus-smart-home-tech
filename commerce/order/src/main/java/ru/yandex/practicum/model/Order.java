@@ -14,6 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@ToString
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -45,6 +46,6 @@ public class Order {
     private Double totalPrice;
     @Column(name = "delivery_price")
     private Double deliveryPrice;
-    @Column(name = " product_price")
-    private Double  productPrice;
+    @Column(name = "product_price")
+    private Double productPrice;
 }

@@ -12,7 +12,7 @@ public class CreateNewOrderRequestDto {
     @NotNull
     private ShoppingCartDto shoppingCartDto;
     @NotNull
-    private DeliveryAddressDto deliveryAddressDto;
+    private AddressDto deliveryAddressDto;
     @NotNull
     private String userName;
 }

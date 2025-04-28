@@ -18,7 +18,7 @@ public interface WarehouseClient {
     public void addQuantityProductInWarehouse(@Valid @RequestBody AddProductToWarehouseRequestDto requestQuantityDto);
 
     @GetMapping("/address")
-    public WarehouseAddressDto getWarehouseAddress();
+    public AddressDto getWarehouseAddress();
 
     @PostMapping("/check")
     BookedProductsDto checkProductsQuantity(@RequestBody ShoppingCartDto shoppingCartDto) throws FeignException;

@@ -28,7 +28,7 @@ public class WarehouseController implements WarehouseClient {
     }
 
     @Override
-    public WarehouseAddressDto getWarehouseAddress() {
+    public AddressDto getWarehouseAddress() {
         log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/address' на получение адреса склада для расчёта доставки");
         return warehouseService.getAddress();
     }

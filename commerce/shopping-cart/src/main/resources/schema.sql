@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS cart_products, cart;
-
 CREATE TABLE IF NOT EXISTS cart (
     cart_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_name varchar(55) NOT NULL,

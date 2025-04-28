@@ -12,6 +12,7 @@ import ru.yandex.practicum.mapper.WarehouseProductMapper;
 import ru.yandex.practicum.model.WarehouseProduct;
 import ru.yandex.practicum.repositore.WarehouseRepository;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -47,9 +48,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WarehouseAddressDto getAddress() {
+    public AddressDto getAddress() {
         String warehouseAddress = AddressService.getAddress();
-        return WarehouseAddressDto.builder()
+        return AddressDto.builder()
             .country(warehouseAddress)
             .city(warehouseAddress)
             .street(warehouseAddress)
@@ -90,11 +91,12 @@ public class WarehouseServiceImpl implements WarehouseService {
             WarehouseProduct product = products.get(cartProduct.getKey());
 
             weight += product.getWeight() * cartProduct.getValue();
-            volume += product.getHeight() * product.getWeight() * product.getDepth() * cartProduct.getValue();
+            volume += (product.getHeight() / 100) * (product.getWidth() / 100) * (product.getDepth() / 100) * cartProduct.getValue();
             fragile = fragile || product.isFragile();
+
         }
 
-        return new BookedProductsDto(weight, volume, fragile);
+        return new BookedProductsDto(Math.round(weight * 100.0) / 100.0, Math.round(volume * 100.0) / 100.0, fragile);
     }
 
     private WarehouseProduct getWarehouseProduct(UUID productId) {

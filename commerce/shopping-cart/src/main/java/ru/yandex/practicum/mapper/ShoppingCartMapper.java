@@ -7,7 +7,7 @@ import ru.yandex.practicum.model.ShoppingCart;
 public class ShoppingCartMapper {
     public static ShoppingCartDto toShoppingCartDto(ShoppingCart shoppingCart) {
         return ShoppingCartDto.builder()
-            .cardId(shoppingCart.getCardId())
+            .cartId(shoppingCart.getCardId())
             .products(shoppingCart.getProducts())
             .build();
     }

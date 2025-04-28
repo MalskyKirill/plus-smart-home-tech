@@ -10,7 +10,7 @@ public class OrderMapper {
     public static Order toOrder(CreateNewOrderRequestDto requestDto, BookedProductsDto bookedProductsDto) {
         return Order.builder()
             .userName(requestDto.getUserName())
-            .cartId(requestDto.getShoppingCartDto().getCardId())
+            .cartId(requestDto.getShoppingCartDto().getCartId())
             .products(requestDto.getShoppingCartDto().getProducts())
             .state(OrderState.NEW)
             .deliveryVolume(bookedProductsDto.getDeliveryVolume())
