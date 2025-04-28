@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -97,6 +98,27 @@ public class WarehouseServiceImpl implements WarehouseService {
         }
 
         return new BookedProductsDto(Math.round(weight * 100.0) / 100.0, Math.round(volume * 100.0) / 100.0, fragile);
+    }
+
+    @Override
+    @Transactional
+    public void returnProducts(Map<UUID, Long> returnProducts) {
+        Map<UUID, WarehouseProduct> products = getWarehouseProducts(returnProducts.keySet());
+
+        returnProducts.forEach((key, value) -> {
+            WarehouseProduct warehouseProduct = products.get(key);
+
+            if (warehouseProduct == null) {
+                throw new ValidationException("Товара с id " + key + " нет на складе");
+            }
+
+            warehouseProduct.setQuantity(warehouseProduct.getQuantity() + value);
+        });
+    }
+
+    private Map<UUID, WarehouseProduct> getWarehouseProducts(Set<UUID> uuids) {
+        return warehouseRepository.findAllById(uuids)
+            .stream().collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
     }
 
     private WarehouseProduct getWarehouseProduct(UUID productId) {

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.dto.*;
 
+import java.util.Map;
+import java.util.UUID;
+
 @FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface WarehouseClient {
     @PutMapping
@@ -22,4 +25,7 @@ public interface WarehouseClient {
 
     @PostMapping("/check")
     BookedProductsDto checkProductsQuantity(@RequestBody ShoppingCartDto shoppingCartDto) throws FeignException;
+
+    @PostMapping("/return")
+    void returnProductsToWarehouse(Map<UUID, Long> returnProducts);
 }

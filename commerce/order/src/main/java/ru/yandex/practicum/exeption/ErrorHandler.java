@@ -18,4 +18,10 @@ public class ErrorHandler {
     public ErrorResponse handleMissingUsernameException(final MissingUsernameException ex) {
         return new ErrorResponse((ex.getMessage()));
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(final ValidationException ex) {
+        return new ErrorResponse((ex.getMessage()));
+    }
 }

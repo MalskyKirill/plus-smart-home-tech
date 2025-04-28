@@ -8,6 +8,9 @@ import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.service.WarehouseService;
 
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +40,12 @@ public class WarehouseController implements WarehouseClient {
     public BookedProductsDto checkProductsQuantity(ShoppingCartDto shoppingCartDto) {
         log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/check' для проверки количества товара на складе");
         return warehouseService.checkQuantity(shoppingCartDto);
+    }
+
+    @Override
+    public void returnProductsToWarehouse(Map<UUID, Long> returnProducts) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/return' для возврата товара на склад");
+        warehouseService.returnProducts(returnProducts);
     }
 
 }

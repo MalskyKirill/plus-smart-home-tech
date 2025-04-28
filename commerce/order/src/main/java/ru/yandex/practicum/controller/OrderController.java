@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.client.OrderClient;
 import ru.yandex.practicum.dto.CreateNewOrderRequestDto;
 import ru.yandex.practicum.dto.OrderDto;
+import ru.yandex.practicum.dto.ProductReturnRequestDto;
 import ru.yandex.practicum.service.OrderService;
 
 import java.util.List;
@@ -28,5 +29,11 @@ public class OrderController implements OrderClient {
     public List<OrderDto> getOrdersByUser(String username) {
         log.info("GET-запрос к эндпоинту: '/api/v1/order' на получение заказов пользователя");
         return orderService.get(username);
+    }
+
+    @Override
+    public OrderDto returnProduct(ProductReturnRequestDto productReturnRequestDto) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/return' на возврат товара");
+        return orderService.returnProduct(productReturnRequestDto);
     }
 }

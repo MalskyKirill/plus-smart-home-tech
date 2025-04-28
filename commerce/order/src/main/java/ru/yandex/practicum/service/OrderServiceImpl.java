@@ -9,12 +9,17 @@ import ru.yandex.practicum.client.DeliveryClient;
 import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.dto.enums.DeliveryState;
+import ru.yandex.practicum.dto.enums.OrderState;
 import ru.yandex.practicum.exeption.MissingUsernameException;
+import ru.yandex.practicum.exeption.NotFoundException;
+import ru.yandex.practicum.exeption.ValidationException;
 import ru.yandex.practicum.mapper.OrderMapper;
 import ru.yandex.practicum.model.Order;
 import ru.yandex.practicum.repository.OrderRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -58,6 +63,48 @@ public class OrderServiceImpl implements OrderService{
         return orders.stream().map(OrderMapper::toOrderDto).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public OrderDto returnProduct(ProductReturnRequestDto productReturnRequestDto) {
+        Order order = getOrderById(productReturnRequestDto.getOrderId());
+
+        if(order.getState().equals(OrderState.NEW)
+            || order.getState().equals(OrderState.CANCELED)
+            || order.getState().equals(OrderState.PRODUCT_RETURNED)) {
+            throw new ValidationException("невозможно вернуть заказ");
+        }
+
+        Map<UUID, Long> orderProducts = order.getProducts();
+        Map<UUID, Long> returnProducts = productReturnRequestDto.getProducts();
+
+        log.info("проверка возвращаемых товаров");
+        orderProducts.forEach((key, value) -> {
+            Long returnQuantity = returnProducts.get(key);
+
+            if (returnQuantity == null) {
+                throw new ValidationException("Товар с id " + key +" отсутствует в списке возвратов");
+            }
+
+            if (!Objects.equals(value, returnQuantity)) {
+                String message = String.format("Не совпадает количество товара с id = %d: заказано %d, возвращается %d",
+                    key, value, returnQuantity);
+                throw new ValidationException(message);
+            }
+        });
+
+        log.info("начинаем возврат товаров на склад");
+        try {
+            warehouseClient.returnProductsToWarehouse(returnProducts);
+        } catch (FeignException ex) {
+            log.error("ошибка при возврате товаров на склад");
+            throw ex;
+        }
+
+        log.info("товары успешно возвращены на склад");
+        order.setState(OrderState.PRODUCT_RETURNED);
+        return OrderMapper.toOrderDto(order);
+    }
+
     private UUID getDeliveryId(UUID orderId, AddressDto addressDto) {
         log.info("создаем доставку для заказа с id {}", orderId);
         DeliveryDto deliveryDto = DeliveryDto.builder()
@@ -68,13 +115,15 @@ public class OrderServiceImpl implements OrderService{
             .build();
 
         return deliveryClient.createNewDelivery(deliveryDto).getDeliveryId();
-
-
     }
 
     private void checkUserName(String username) {
         if(username.isBlank()) {
             throw new MissingUsernameException("отсутствует имя пользователя");
         }
+    }
+
+    private Order getOrderById(UUID orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("заказа с id " + orderId + "нет"));
     }
 }
