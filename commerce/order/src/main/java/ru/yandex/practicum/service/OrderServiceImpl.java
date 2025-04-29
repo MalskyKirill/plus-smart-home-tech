@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.client.DeliveryClient;
+import ru.yandex.practicum.client.PaymentClient;
 import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.dto.enums.DeliveryState;
@@ -30,6 +31,7 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepository;
     private final WarehouseClient warehouseClient;
     private final DeliveryClient deliveryClient;
+    private final PaymentClient paymentClient;
 
     @Override
     @Transactional
@@ -65,7 +67,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional
-    public OrderDto returnProduct(ProductReturnRequestDto productReturnRequestDto) {
+    public OrderDto returnOrder(ProductReturnRequestDto productReturnRequestDto) {
         Order order = getOrderById(productReturnRequestDto.getOrderId());
 
         if(order.getState().equals(OrderState.NEW)
@@ -102,6 +104,36 @@ public class OrderServiceImpl implements OrderService{
 
         log.info("товары успешно возвращены на склад");
         order.setState(OrderState.PRODUCT_RETURNED);
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto payment(UUID orderId) {
+        Order order = getOrderById(orderId);
+        if (order.getState().equals(OrderState.PAID)) {
+            throw new ValidationException("заказ уже оплачен");
+        }
+
+        if (order.getState().equals(OrderState.ON_PAYMENT)) {
+            log.info("оплата прошла успешно");
+            order.setState(OrderState.PAID);
+            return OrderMapper.toOrderDto(order);
+        }
+
+        if (!order.getState().equals(OrderState.ASSEMBLED)) {
+            throw new ValidationException("заказ еще не собран");
+        }
+
+        log.info("отправляем заказ на оплату");
+        try {
+            order.setState(OrderState.ON_PAYMENT);
+            PaymentDto paymentDto = paymentClient.createPayment(OrderMapper.toOrderDto(order));
+        } catch (FeignException ex) {
+            log.error("ошибка при оплате заказа");
+            throw ex;
+        }
+
         return OrderMapper.toOrderDto(order);
     }
 

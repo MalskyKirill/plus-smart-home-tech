@@ -11,6 +11,7 @@ import ru.yandex.practicum.dto.ProductReturnRequestDto;
 import ru.yandex.practicum.service.OrderService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -32,8 +33,14 @@ public class OrderController implements OrderClient {
     }
 
     @Override
-    public OrderDto returnProduct(ProductReturnRequestDto productReturnRequestDto) {
-        log.info("POST-запрос к эндпоинту: '/api/v1/order/return' на возврат товара");
-        return orderService.returnProduct(productReturnRequestDto);
+    public OrderDto returnOrder(ProductReturnRequestDto productReturnRequestDto) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/return' на возврат заказа");
+        return orderService.returnOrder(productReturnRequestDto);
+    }
+
+    @Override
+    public OrderDto paymentProduct(UUID orderId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/payment' на оплату товара");
+        return orderService.payment(orderId);
     }
 }

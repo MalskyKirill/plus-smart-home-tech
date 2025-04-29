@@ -7,6 +7,7 @@ import ru.yandex.practicum.dto.OrderDto;
 import ru.yandex.practicum.dto.ProductReturnRequestDto;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "order", path = "/api/v1/order")
 public interface OrderClient {
@@ -17,5 +18,8 @@ public interface OrderClient {
     List<OrderDto> getOrdersByUser(@RequestParam String username);
 
     @PostMapping("/return")
-    OrderDto returnProduct(@RequestBody ProductReturnRequestDto productReturnRequestDto);
+    OrderDto returnOrder(@RequestBody ProductReturnRequestDto productReturnRequestDto);
+
+    @PostMapping("/payment")
+    OrderDto paymentProduct(@RequestBody UUID orderId);
 }
