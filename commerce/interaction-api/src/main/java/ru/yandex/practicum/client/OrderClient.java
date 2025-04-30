@@ -22,4 +22,7 @@ public interface OrderClient {
 
     @PostMapping("/payment")
     OrderDto paymentProduct(@RequestBody UUID orderId);
+
+    @PostMapping("/payment/failed")
+    OrderDto paymentProductFailed(@RequestBody UUID orderId);
 }

@@ -137,6 +137,16 @@ public class OrderServiceImpl implements OrderService{
         return OrderMapper.toOrderDto(order);
     }
 
+    @Override
+    public OrderDto paymentFailed(UUID orderId) {
+        Order order = getOrderById(orderId);
+
+        log.info("меняем статус заказа на PAYMENT_FAILED");
+        order.setState(OrderState.PAYMENT_FAILED);
+
+        return OrderMapper.toOrderDto(order);
+    }
+
     private UUID getDeliveryId(UUID orderId, AddressDto addressDto) {
         log.info("создаем доставку для заказа с id {}", orderId);
         DeliveryDto deliveryDto = DeliveryDto.builder()
