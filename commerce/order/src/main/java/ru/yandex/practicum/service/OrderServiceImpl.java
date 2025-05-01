@@ -138,12 +138,24 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional
     public OrderDto paymentFailed(UUID orderId) {
         Order order = getOrderById(orderId);
 
         log.info("меняем статус заказа на PAYMENT_FAILED");
         order.setState(OrderState.PAYMENT_FAILED);
 
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto completed(UUID orderId) {
+        Order order = getOrderById(orderId);
+
+        log.info("меняем статус заказа на COMPLETED");
+        order.setState(OrderState.COMPLETED);
+        
         return OrderMapper.toOrderDto(order);
     }
 

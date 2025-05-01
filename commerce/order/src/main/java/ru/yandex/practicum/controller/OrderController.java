@@ -49,4 +49,10 @@ public class OrderController implements OrderClient {
         log.info("POST-запрос к эндпоинту: '/api/v1/order/payment/failed' на изменение статуса заказа в случае ошибки");
         return orderService.paymentFailed(orderId);
     }
+
+    @Override
+    public OrderDto paymentProductCompleted(UUID orderId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/completed' на изменение статуса заказа при его завершении");
+        return orderService.completed(orderId);
+    }
 }

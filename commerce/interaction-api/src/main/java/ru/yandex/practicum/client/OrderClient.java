@@ -25,4 +25,7 @@ public interface OrderClient {
 
     @PostMapping("/payment/failed")
     OrderDto paymentProductFailed(@RequestBody UUID orderId);
+
+    @PostMapping("/completed")
+    OrderDto paymentProductCompleted(@RequestBody UUID orderId);
 }

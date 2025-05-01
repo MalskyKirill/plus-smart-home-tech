@@ -17,4 +17,6 @@ public interface OrderService {
     OrderDto payment(UUID orderId);
 
     OrderDto paymentFailed(UUID orderId);
+
+    OrderDto completed(UUID orderId);
 }
