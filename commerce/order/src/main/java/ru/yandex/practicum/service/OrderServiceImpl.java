@@ -129,6 +129,7 @@ public class OrderServiceImpl implements OrderService{
         try {
             order.setState(OrderState.ON_PAYMENT);
             PaymentDto paymentDto = paymentClient.createPayment(OrderMapper.toOrderDto(order));
+            order.setPaymentId(paymentDto.getPaymentId());
         } catch (FeignException ex) {
             log.error("ошибка при оплате заказа");
             throw ex;
@@ -155,7 +156,23 @@ public class OrderServiceImpl implements OrderService{
 
         log.info("меняем статус заказа на COMPLETED");
         order.setState(OrderState.COMPLETED);
-        
+
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    public OrderDto calculateDelivery(UUID orderId) {
+        Order order = getOrderById(orderId);
+
+        log.info("расчитываем стоимость доставки");
+        try {
+            Double deliveryPryce = deliveryClient.calculateDeliveryCost(OrderMapper.toOrderDto(order));
+            order.setDeliveryPrice(deliveryPryce);
+        } catch (FeignException ex) {
+            log.error("ошибка при расчете доставки");
+            throw ex;
+        }
+
         return OrderMapper.toOrderDto(order);
     }
 

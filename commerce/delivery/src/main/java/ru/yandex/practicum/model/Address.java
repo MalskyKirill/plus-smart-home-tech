@@ -9,8 +9,7 @@ import java.util.UUID;
 @Table(name = "addresses")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 public class Address {
     @Id

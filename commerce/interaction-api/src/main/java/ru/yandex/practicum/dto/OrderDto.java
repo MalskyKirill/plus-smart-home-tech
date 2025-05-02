@@ -25,7 +25,7 @@ public class OrderDto {
     private OrderState state;
     private Double deliveryWeight;
     private Double deliveryVolume;
-    private boolean fragile;
+    private Boolean fragile;
     private Double totalPrice;
     private Double deliveryPrice;
     private Double productPrice;
