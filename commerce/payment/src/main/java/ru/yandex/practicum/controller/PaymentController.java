@@ -21,4 +21,16 @@ public class PaymentController implements PaymentClient {
         log.info("POST-запрос к эндпоинту: '/api/v1/payment' на создание нового платежа");
         return paymentService.create(orderDto);
     }
+
+    @Override
+    public Double calculateProductCost(OrderDto orderDto) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/payment/productCost' на расчет стоимости товаров в заказе");
+        return paymentService.productCost(orderDto);
+    }
+
+    @Override
+    public Double calculateTotalCost(OrderDto orderDto) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/payment/totalCost' на расчет стоимости общей стоимости товара");
+        return paymentService.totalCost(orderDto);
+    }
 }

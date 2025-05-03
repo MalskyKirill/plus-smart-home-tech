@@ -10,4 +10,10 @@ public interface PaymentClient {
 
     @PostMapping
     PaymentDto createPayment(OrderDto orderDto);
+
+    @PostMapping("/productCost")
+    Double calculateProductCost(OrderDto orderDto);
+
+    @PostMapping("/totalCost")
+    Double calculateTotalCost(OrderDto orderDto);
 }

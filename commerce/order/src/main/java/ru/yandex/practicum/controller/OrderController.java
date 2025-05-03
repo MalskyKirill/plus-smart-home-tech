@@ -61,4 +61,12 @@ public class OrderController implements OrderClient {
         log.info("POST-запрос к эндпоинту: '/api/v1/calculate/delivery' на получение стоимости доставки");
         return orderService.calculateDelivery(orderId);
     }
+
+    @Override
+    public OrderDto calculateTotalPrice(UUID orderId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/calculate/total' на расчет стоимости заказа");
+        return orderService.calculateTotal(orderId);
+    }
+
+
 }

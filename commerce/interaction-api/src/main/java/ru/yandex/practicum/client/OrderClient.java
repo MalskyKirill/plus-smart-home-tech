@@ -31,4 +31,7 @@ public interface OrderClient {
 
     @PostMapping("/calculate/delivery")
     OrderDto calculateDeliveryPrice(@RequestBody UUID orderId);
+
+    @PostMapping("/calculate/total")
+    OrderDto calculateTotalPrice(@RequestBody UUID orderId);
 }

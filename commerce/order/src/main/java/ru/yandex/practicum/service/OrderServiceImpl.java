@@ -161,6 +161,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional
     public OrderDto calculateDelivery(UUID orderId) {
         Order order = getOrderById(orderId);
 
@@ -170,6 +171,29 @@ public class OrderServiceImpl implements OrderService{
             order.setDeliveryPrice(deliveryPryce);
         } catch (FeignException ex) {
             log.error("ошибка при расчете доставки");
+            throw ex;
+        }
+
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto calculateTotal(UUID orderId) {
+        Order order = getOrderById(orderId);
+
+        log.info("начинаем рассчет общей стоимости");
+        try {
+            log.info("начинаем расчет стоимости товаров в заказе");
+            Double productsPrice = paymentClient.calculateProductCost(OrderMapper.toOrderDto(order));
+            order.setProductPrice(productsPrice);
+
+            log.info("начинаем расчет общей стоимости");
+            Double totalPrice = paymentClient.calculateTotalCost(OrderMapper.toOrderDto(order));
+            order.setTotalPrice(totalPrice);
+
+        } catch (FeignException ex) {
+            log.error("ошибка при расчете общей стоимости");
             throw ex;
         }
 

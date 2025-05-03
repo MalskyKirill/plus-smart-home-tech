@@ -6,7 +6,7 @@ import ru.yandex.practicum.dto.enums.PaymentState;
 import ru.yandex.practicum.model.Payment;
 
 public class PaymentMapper {
-    private static Double FEE_TAX = 0.1;
+    public static Double FEE_TAX = 0.1;
     public static Payment toPayment(OrderDto orderDto) {
         return Payment.builder()
             .orderId(orderDto.getOrderId())
