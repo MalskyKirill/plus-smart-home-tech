@@ -1,11 +1,15 @@
 package ru.yandex.practicum.service;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.DeliveryDto;
 import ru.yandex.practicum.dto.OrderDto;
+import ru.yandex.practicum.dto.ShippedToDeliveryRequestDto;
+import ru.yandex.practicum.dto.enums.DeliveryState;
 import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.mapper.DeliveryMapper;
 import ru.yandex.practicum.model.Address;
@@ -19,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService{
     private final DeliveryRepository deliveryRepository;
+    private final WarehouseClient warehouseClient;
 
     private final double BASE_DELIVERY_PRICE = 5.0;
     private final double ADDRESS_1_RATIO = 1;
@@ -51,6 +56,35 @@ public class DeliveryServiceImpl implements DeliveryService{
         cost *= getRatioByToAddress(delivery.getFromAddress(), delivery.getToAddress());
         log.info("стоимость доставки " + cost);
         return cost;
+    }
+
+    @Override
+    @Transactional
+    public void picked(UUID deliveryId) {
+        Delivery delivery = getDeliveryById(deliveryId);
+
+        log.info("передаем заказ на склад для проверки товаров");
+        try {
+            warehouseClient.shippedDelivery(getShippedToDeliveryRequest(delivery));
+
+        } catch (FeignException ex) {
+            log.error("ошибка при обработке заказа в сервисе warehouse");
+            throw ex;
+        }
+
+        delivery.setDeliveryState(DeliveryState.IN_PROGRESS);
+    }
+
+    private ShippedToDeliveryRequestDto getShippedToDeliveryRequest(Delivery delivery) {
+        return ShippedToDeliveryRequestDto
+            .builder()
+            .orderId(delivery.getOrderId())
+            .deliveryId(delivery.getDeliveryId())
+            .build();
+    }
+
+    private Delivery getDeliveryById(UUID deliveryId) {
+        return deliveryRepository.findById(deliveryId).orElseThrow(() -> new NotFoundException("доставки с id " + deliveryId + "нет"))
     }
 
     double getRatioByFromAddress(Address address) {

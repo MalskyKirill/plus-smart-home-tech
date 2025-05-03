@@ -28,4 +28,7 @@ public interface WarehouseClient {
 
     @PostMapping("/return")
     void returnProductsToWarehouse(Map<UUID, Long> returnProducts);
+
+    @PostMapping("/shipped")
+    void shippedDelivery(ShippedToDeliveryRequestDto shippedToDeliveryRequest);
 }

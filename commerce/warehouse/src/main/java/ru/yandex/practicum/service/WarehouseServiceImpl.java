@@ -116,6 +116,11 @@ public class WarehouseServiceImpl implements WarehouseService {
         });
     }
 
+    @Override
+    public void shipped(ShippedToDeliveryRequestDto shippedToDeliveryRequest) {
+        
+    }
+
     private Map<UUID, WarehouseProduct> getWarehouseProducts(Set<UUID> uuids) {
         return warehouseRepository.findAllById(uuids)
             .stream().collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));

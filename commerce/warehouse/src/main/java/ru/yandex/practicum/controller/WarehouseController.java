@@ -48,4 +48,10 @@ public class WarehouseController implements WarehouseClient {
         warehouseService.returnProducts(returnProducts);
     }
 
+    @Override
+    public void shippedDelivery(ShippedToDeliveryRequestDto shippedToDeliveryRequest) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/shipped' для передачи товаров в доставку");
+        warehouseService.shipped(shippedToDeliveryRequest);
+    }
+
 }

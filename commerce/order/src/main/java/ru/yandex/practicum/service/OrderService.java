@@ -23,4 +23,6 @@ public interface OrderService {
     OrderDto calculateDelivery(UUID orderId);
 
     OrderDto calculateTotal(UUID orderId);
+
+    OrderDto delivery(UUID orderId);
 }

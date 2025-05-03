@@ -21,17 +21,20 @@ public interface OrderClient {
     OrderDto returnOrder(@RequestBody ProductReturnRequestDto productReturnRequestDto);
 
     @PostMapping("/payment")
-    OrderDto paymentProduct(@RequestBody UUID orderId);
+    OrderDto paymentOrder(@RequestBody UUID orderId);
 
     @PostMapping("/payment/failed")
-    OrderDto paymentProductFailed(@RequestBody UUID orderId);
+    OrderDto paymentOrderFailed(@RequestBody UUID orderId);
 
     @PostMapping("/completed")
-    OrderDto paymentProductCompleted(@RequestBody UUID orderId);
+    OrderDto paymentOrderCompleted(@RequestBody UUID orderId);
 
     @PostMapping("/calculate/delivery")
     OrderDto calculateDeliveryPrice(@RequestBody UUID orderId);
 
     @PostMapping("/calculate/total")
     OrderDto calculateTotalPrice(@RequestBody UUID orderId);
+
+    @PostMapping("/delivery")
+    OrderDto deliveryOrder(@RequestBody UUID orderId);
 }

@@ -39,33 +39,39 @@ public class OrderController implements OrderClient {
     }
 
     @Override
-    public OrderDto paymentProduct(UUID orderId) {
+    public OrderDto paymentOrder(UUID orderId) {
         log.info("POST-запрос к эндпоинту: '/api/v1/order/payment' на оплату товара");
         return orderService.payment(orderId);
     }
 
     @Override
-    public OrderDto paymentProductFailed(UUID orderId) {
+    public OrderDto paymentOrderFailed(UUID orderId) {
         log.info("POST-запрос к эндпоинту: '/api/v1/order/payment/failed' на изменение статуса заказа в случае ошибки");
         return orderService.paymentFailed(orderId);
     }
 
     @Override
-    public OrderDto paymentProductCompleted(UUID orderId) {
+    public OrderDto paymentOrderCompleted(UUID orderId) {
         log.info("POST-запрос к эндпоинту: '/api/v1/order/completed' на изменение статуса заказа при его завершении");
         return orderService.completed(orderId);
     }
 
     @Override
     public OrderDto calculateDeliveryPrice(UUID orderId) {
-        log.info("POST-запрос к эндпоинту: '/api/v1/calculate/delivery' на получение стоимости доставки");
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/calculate/delivery' на получение стоимости доставки");
         return orderService.calculateDelivery(orderId);
     }
 
     @Override
     public OrderDto calculateTotalPrice(UUID orderId) {
-        log.info("POST-запрос к эндпоинту: '/api/v1/calculate/total' на расчет стоимости заказа");
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/calculate/total' на расчет стоимости заказа");
         return orderService.calculateTotal(orderId);
+    }
+
+    @Override
+    public OrderDto deliveryOrder(UUID orderId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/delivery' на передачу заказа на доставку");
+        return orderService.delivery(orderId);
     }
 
 

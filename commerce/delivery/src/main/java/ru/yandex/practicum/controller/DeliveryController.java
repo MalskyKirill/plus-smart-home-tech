@@ -9,6 +9,8 @@ import ru.yandex.practicum.dto.DeliveryDto;
 import ru.yandex.practicum.dto.OrderDto;
 import ru.yandex.practicum.service.DeliveryService;
 
+import java.util.UUID;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +25,13 @@ public class DeliveryController implements DeliveryClient {
 
     @Override
     public Double calculateDeliveryCost(OrderDto orderDto) {
-        log.info("POST-запрос к эндпоинту: '/api/v1/delivery/cost' на создание новой доставки");
+        log.info("POST-запрос к эндпоинту: '/api/v1/delivery/cost' на расчет доставки");
         return deliveryService.cost(orderDto);
+    }
+
+    @Override
+    public void pickedOrder(UUID deliveryId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/delivery/picked' эмуляцию получения товара в доставку");
+        deliveryService.picked(deliveryId);
     }
 }

@@ -200,6 +200,32 @@ public class OrderServiceImpl implements OrderService{
         return OrderMapper.toOrderDto(order);
     }
 
+    @Override
+    @Transactional
+    public OrderDto delivery(UUID orderId) {
+        Order order = getOrderById(orderId);
+
+        if(order.getState().equals(OrderState.ON_DELIVERY)) {
+            order.setState(OrderState.DELIVERED);
+            return OrderMapper.toOrderDto(order);
+        }
+
+        if (!order.getState().equals(OrderState.PAID)) {
+            throw new ValidationException("заказ еще не оплачен");
+        }
+
+        log.info("отправляем заказ в сервис доставки");
+        try {
+            deliveryClient.pickedOrder(order.getDeliveryId());
+        } catch (FeignException ex) {
+            log.error("ошибка при обработке заказа в сервисе доставки");
+            throw ex;
+        }
+
+        order.setState(OrderState.ON_DELIVERY);
+        return OrderMapper.toOrderDto(order);
+    }
+
     private UUID getDeliveryId(UUID orderId, AddressDto addressDto) {
         log.info("создаем доставку для заказа с id {}", orderId);
         DeliveryDto deliveryDto = DeliveryDto.builder()

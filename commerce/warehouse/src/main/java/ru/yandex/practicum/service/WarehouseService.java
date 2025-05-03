@@ -15,4 +15,6 @@ public interface WarehouseService {
     BookedProductsDto checkQuantity(ShoppingCartDto shoppingCartDto);
 
     void returnProducts(Map<UUID, Long> returnProducts);
+
+    void shipped(ShippedToDeliveryRequestDto shippedToDeliveryRequest);
 }
