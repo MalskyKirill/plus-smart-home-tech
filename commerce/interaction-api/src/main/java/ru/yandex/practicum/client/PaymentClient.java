@@ -23,4 +23,6 @@ public interface PaymentClient {
     @PostMapping("/refund")
     void refundPayment(@RequestBody UUID paymentId);
 
+    @PostMapping("/failed")
+    void failedPayment(@RequestBody UUID paymentId);
 }

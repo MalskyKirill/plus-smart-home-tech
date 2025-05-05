@@ -13,4 +13,6 @@ public interface PaymentService {
     Double totalCost(OrderDto orderDto);
 
     void refund(UUID paymentId);
+
+    void failed(UUID paymentId);
 }

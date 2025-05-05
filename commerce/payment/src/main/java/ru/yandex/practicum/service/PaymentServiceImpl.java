@@ -94,6 +94,18 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
+    @Override
+    public void failed(UUID paymentId) {
+        Payment payment = getPaymentById(paymentId);
+        payment.setPaymentState(PaymentState.FAILED);
+        try {
+            orderClient.paymentOrderFailed(payment.getOrderId());
+        } catch (FeignException ex) {
+            log.error("ошибка при запросе к сервису order на изменение статуса оплыты");
+            throw ex;
+        }
+    }
+
     private Payment getPaymentById(UUID paymentId) {
         return paymentRepository.findById(paymentId)
             .orElseThrow(() -> new NotFoundException("оплаты с id " + paymentId + "нет"));

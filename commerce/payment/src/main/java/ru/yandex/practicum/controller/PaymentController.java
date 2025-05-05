@@ -41,4 +41,10 @@ public class PaymentController implements PaymentClient {
         log.info("POST-запрос к эндпоинту: '/api/v1/payment/refund' для эмуляции успешной оплаты в платежного шлюза");
         paymentService.refund(paymentId);
     }
+
+    @Override
+    public void failedPayment(UUID paymentId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/payment/failed' для эмуляции отказа в оплате платежного шлюза");
+        paymentService.failed(paymentId);
+    }
 }
