@@ -70,8 +70,14 @@ public class OrderController implements OrderClient {
 
     @Override
     public OrderDto deliveryOrder(UUID orderId) {
-        log.info("POST-запрос к эндпоинту: '/api/v1/order/delivery' на передачу заказа на доставку");
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/delivery' для передачу заказа на доставку");
         return orderService.delivery(orderId);
+    }
+
+    @Override
+    public OrderDto assemblyOrder(UUID orderId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/assembly' для передачу заказа на сборку");
+        return orderService.assembly(orderId);
     }
 
 

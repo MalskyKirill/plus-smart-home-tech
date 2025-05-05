@@ -37,4 +37,7 @@ public interface OrderClient {
 
     @PostMapping("/delivery")
     OrderDto deliveryOrder(@RequestBody UUID orderId);
+
+    @PostMapping("/assembly")
+    OrderDto assemblyOrder(@RequestBody UUID orderId);
 }

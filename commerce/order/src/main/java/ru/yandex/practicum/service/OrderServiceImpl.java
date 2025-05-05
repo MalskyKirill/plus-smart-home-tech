@@ -226,6 +226,36 @@ public class OrderServiceImpl implements OrderService{
         return OrderMapper.toOrderDto(order);
     }
 
+    @Override
+    @Transactional
+    public OrderDto assembly(UUID orderId) {
+        Order order = getOrderById(orderId);
+
+        if(!order.getState().equals(OrderState.NEW)) {
+            throw new ValidationException("заказ нельзя отправить на сборку");
+        }
+
+        log.info("отправляем заказа на склад для сборки");
+
+        try {
+            warehouseClient.assemblyProducts(getAssemblyProductsForOrderRequest(order));
+        } catch (FeignException ex) {
+            log.error("ошибка при сборке заказа");
+            throw ex;
+        }
+
+        order.setState(OrderState.ASSEMBLED);
+        return OrderMapper.toOrderDto(order);
+    }
+
+    private AssemblyProductsForOrderRequest getAssemblyProductsForOrderRequest(Order order) {
+        return AssemblyProductsForOrderRequest
+            .builder()
+            .orderId(order.getOrderId())
+            .products(order.getProducts())
+            .build();
+    }
+
     private UUID getDeliveryId(UUID orderId, AddressDto addressDto) {
         log.info("создаем доставку для заказа с id {}", orderId);
         DeliveryDto deliveryDto = DeliveryDto.builder()

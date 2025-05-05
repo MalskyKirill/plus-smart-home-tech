@@ -10,7 +10,9 @@ import ru.yandex.practicum.exeption.InsufficientProductException;
 import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.exeption.ProductAlreadyExistException;
 import ru.yandex.practicum.mapper.WarehouseProductMapper;
+import ru.yandex.practicum.model.OrderBooking;
 import ru.yandex.practicum.model.WarehouseProduct;
+import ru.yandex.practicum.repositore.OrderBookingRepository;
 import ru.yandex.practicum.repositore.WarehouseRepository;
 
 import java.text.DecimalFormat;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
+    private final OrderBookingRepository orderBookingRepository;
     private final WarehouseRepository warehouseRepository;
 
     @Override
@@ -68,36 +71,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             .stream()
             .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
 
-        Set<UUID> cardProductIds = cartProducts.keySet();
-        Set<UUID> productsIds = products.keySet();
-
-        for (UUID cardProductId : cardProductIds) {
-            if (!productsIds.contains(cardProductId)) {
-                throw new NotFoundException("товара с id " + cardProductId + " нет на складе");
-            }
-        }
-
-        cartProducts.forEach((key, value) -> {
-            WarehouseProduct product = products.get(key);
-            if(product.getQuantity() < value) {
-                throw new InsufficientProductException("товара с id " + key + " нехватает на складе");
-            }
-        });
-
-        double weight = 0;
-        double volume = 0;
-        boolean fragile = false;
-
-        for (Map.Entry<UUID, Long> cartProduct : cartProducts.entrySet()) {
-            WarehouseProduct product = products.get(cartProduct.getKey());
-
-            weight += product.getWeight() * cartProduct.getValue();
-            volume += (product.getHeight() / 100) * (product.getWidth() / 100) * (product.getDepth() / 100) * cartProduct.getValue();
-            fragile = fragile || product.isFragile();
-
-        }
-
-        return new BookedProductsDto(Math.round(weight * 100.0) / 100.0, Math.round(volume * 100.0) / 100.0, fragile);
+        return checkQuantityProducts(cartProducts, products);
     }
 
     @Override
@@ -118,7 +92,63 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public void shipped(ShippedToDeliveryRequestDto shippedToDeliveryRequest) {
-        
+
+    }
+
+    @Override
+    public BookedProductsDto assembly(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest) {
+        Map<UUID, Long> assemblyProducts = assemblyProductsForOrderRequest.getProducts();
+        Map<UUID, WarehouseProduct> warehouseProducts = warehouseRepository.findAllById(assemblyProducts.keySet())
+            .stream()
+            .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        BookedProductsDto bookedProductsDto = checkQuantityProducts(assemblyProducts, warehouseProducts);
+
+        warehouseProducts
+            .forEach((key, value) -> value.setQuantity(value.getQuantity() - assemblyProducts.get(key)));
+
+        orderBookingRepository
+            .save(OrderBooking.builder()
+                .orderId(assemblyProductsForOrderRequest.getOrderId())
+                .products(assemblyProducts)
+                .build()
+            );
+
+        return bookedProductsDto;
+    }
+
+    private BookedProductsDto checkQuantityProducts(Map<UUID, Long> cartProducts,
+                                            Map<UUID, WarehouseProduct> warehouseProducts) {
+        Set<UUID> cardProductIds = cartProducts.keySet();
+        Set<UUID> productsIds = warehouseProducts.keySet();
+
+        for (UUID cardProductId : cardProductIds) {
+            if (!productsIds.contains(cardProductId)) {
+                throw new NotFoundException("товара с id " + cardProductId + " нет на складе");
+            }
+        }
+
+        cartProducts.forEach((key, value) -> {
+            WarehouseProduct product = warehouseProducts.get(key);
+            if(product.getQuantity() < value) {
+                throw new InsufficientProductException("товара с id " + key + " нехватает на складе");
+            }
+        });
+
+        double weight = 0;
+        double volume = 0;
+        boolean fragile = false;
+
+        for (Map.Entry<UUID, Long> cartProduct : cartProducts.entrySet()) {
+            WarehouseProduct product = warehouseProducts.get(cartProduct.getKey());
+
+            weight += product.getWeight() * cartProduct.getValue();
+            volume += (product.getHeight() / 100) * (product.getWidth() / 100) * (product.getDepth() / 100) * cartProduct.getValue();
+            fragile = fragile || product.isFragile();
+
+        }
+
+        return new BookedProductsDto(Math.round(weight * 100.0) / 100.0, Math.round(volume * 100.0) / 100.0, fragile);
     }
 
     private Map<UUID, WarehouseProduct> getWarehouseProducts(Set<UUID> uuids) {

@@ -31,4 +31,7 @@ public interface WarehouseClient {
 
     @PostMapping("/shipped")
     void shippedDelivery(ShippedToDeliveryRequestDto shippedToDeliveryRequest);
+
+    @PostMapping("/assembly")
+    BookedProductsDto assemblyProducts(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest);
 }

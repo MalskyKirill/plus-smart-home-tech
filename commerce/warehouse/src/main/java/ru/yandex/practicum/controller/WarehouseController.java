@@ -54,4 +54,10 @@ public class WarehouseController implements WarehouseClient {
         warehouseService.shipped(shippedToDeliveryRequest);
     }
 
+    @Override
+    public BookedProductsDto assemblyProducts(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/assembly' для сборки товаров на складе");
+        return warehouseService.assembly(assemblyProductsForOrderRequest);
+    }
+
 }

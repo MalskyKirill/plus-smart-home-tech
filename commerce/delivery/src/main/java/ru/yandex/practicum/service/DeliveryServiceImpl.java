@@ -84,7 +84,8 @@ public class DeliveryServiceImpl implements DeliveryService{
     }
 
     private Delivery getDeliveryById(UUID deliveryId) {
-        return deliveryRepository.findById(deliveryId).orElseThrow(() -> new NotFoundException("доставки с id " + deliveryId + "нет"))
+        return deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NotFoundException("доставки с id " + deliveryId + "нет"));
     }
 
     double getRatioByFromAddress(Address address) {
