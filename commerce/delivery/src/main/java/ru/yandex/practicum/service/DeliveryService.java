@@ -13,4 +13,6 @@ public interface DeliveryService {
     void picked(UUID deliveryId);
 
     void successful(UUID deliveryId);
+
+    void failed(UUID deliveryId);
 }

@@ -22,4 +22,7 @@ public interface DeliveryClient {
 
     @PostMapping("/successful")
     void successfulDelivery(@RequestBody UUID deliveryId);
+
+    @PostMapping("/failed")
+    void failedDelivery(@RequestBody UUID deliveryId);
 }

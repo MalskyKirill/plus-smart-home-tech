@@ -40,4 +40,10 @@ public class DeliveryController implements DeliveryClient {
         log.info("POST-запрос к эндпоинту: '/api/v1/delivery/successful' эмуляцию успешной доставки");
         deliveryService.successful(deliveryId);
     }
+
+    @Override
+    public void failedDelivery(UUID deliveryId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/delivery/failed' эмуляцию неудачной доставки");
+        deliveryService.failed(deliveryId);
+    }
 }

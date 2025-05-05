@@ -90,6 +90,18 @@ public class DeliveryServiceImpl implements DeliveryService{
         }
     }
 
+    @Override
+    public void failed(UUID deliveryId) {
+        Delivery delivery = getDeliveryById(deliveryId);
+        delivery.setDeliveryState(DeliveryState.FAILED);
+        try {
+            orderClient.deliveryFailed(delivery.getOrderId());
+        } catch (FeignException ex) {
+            log.error("ошибка при запросе к сервису order на изменение статуса заказа");
+            throw ex;
+        }
+    }
+
     private ShippedToDeliveryRequestDto getShippedToDeliveryRequest(Delivery delivery) {
         return ShippedToDeliveryRequestDto
             .builder()
