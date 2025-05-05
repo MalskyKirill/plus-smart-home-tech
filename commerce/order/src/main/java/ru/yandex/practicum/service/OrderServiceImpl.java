@@ -252,8 +252,16 @@ public class OrderServiceImpl implements OrderService{
     @Transactional
     public OrderDto deliveryFailed(UUID orderId) {
         Order order = getOrderById(orderId);
-        log.info("меняем статус заказа на FAILED");
+        log.info("меняем статус заказа на DELIVERY_FAILED");
         order.setState(OrderState.DELIVERY_FAILED);
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    public OrderDto assemblyFailed(UUID orderId) {
+        Order order = getOrderById(orderId);
+        log.info("меняем статус заказа на ASSEMBLY_FAILED");
+        order.setState(OrderState.ASSEMBLY_FAILED);
         return OrderMapper.toOrderDto(order);
     }
 

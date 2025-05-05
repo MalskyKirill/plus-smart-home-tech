@@ -43,4 +43,7 @@ public interface OrderClient {
 
     @PostMapping("/delivery/failed")
     OrderDto deliveryFailed(@RequestBody UUID orderId);
+
+    @PostMapping("/assembly/failed")
+    OrderDto assemblyFailed(@RequestBody UUID orderId);
 }
