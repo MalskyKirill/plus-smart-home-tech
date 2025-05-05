@@ -248,6 +248,15 @@ public class OrderServiceImpl implements OrderService{
         return OrderMapper.toOrderDto(order);
     }
 
+    @Override
+    @Transactional
+    public OrderDto deliveryFailed(UUID orderId) {
+        Order order = getOrderById(orderId);
+        log.info("меняем статус заказа на FAILED");
+        order.setState(OrderState.DELIVERY_FAILED);
+        return OrderMapper.toOrderDto(order);
+    }
+
     private AssemblyProductsForOrderRequest getAssemblyProductsForOrderRequest(Order order) {
         return AssemblyProductsForOrderRequest
             .builder()

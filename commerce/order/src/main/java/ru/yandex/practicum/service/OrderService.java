@@ -27,4 +27,6 @@ public interface OrderService {
     OrderDto delivery(UUID orderId);
 
     OrderDto assembly(UUID orderId);
+
+    OrderDto deliveryFailed(UUID orderId);
 }

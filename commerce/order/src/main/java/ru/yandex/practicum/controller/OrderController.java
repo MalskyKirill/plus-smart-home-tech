@@ -80,5 +80,11 @@ public class OrderController implements OrderClient {
         return orderService.assembly(orderId);
     }
 
+    @Override
+    public OrderDto deliveryFailed(UUID orderId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/order/delivery/failed' для ошибки при доставке");
+        return orderService.deliveryFailed(orderId);
+    }
+
 
 }
