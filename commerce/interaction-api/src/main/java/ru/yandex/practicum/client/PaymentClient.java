@@ -1,5 +1,6 @@
 package ru.yandex.practicum.client;
 
+import feign.FeignException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,17 +13,17 @@ import java.util.UUID;
 public interface PaymentClient {
 
     @PostMapping
-    PaymentDto createPayment(OrderDto orderDto);
+    PaymentDto createPayment(OrderDto orderDto) throws FeignException;
 
     @PostMapping("/productCost")
-    Double calculateProductCost(OrderDto orderDto);
+    Double calculateProductCost(OrderDto orderDto) throws FeignException;
 
     @PostMapping("/totalCost")
-    Double calculateTotalCost(OrderDto orderDto);
+    Double calculateTotalCost(OrderDto orderDto) throws FeignException;
 
     @PostMapping("/refund")
-    void refundPayment(@RequestBody UUID paymentId);
+    void refundPayment(@RequestBody UUID paymentId) throws FeignException;
 
     @PostMapping("/failed")
-    void failedPayment(@RequestBody UUID paymentId);
+    void failedPayment(@RequestBody UUID paymentId) throws FeignException;
 }

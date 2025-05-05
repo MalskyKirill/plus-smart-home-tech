@@ -1,5 +1,6 @@
 package ru.yandex.practicum.client;
 
+import feign.FeignException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,17 +13,17 @@ import java.util.UUID;
 @FeignClient(name = "delivery", path = "/api/v1/delivery")
 public interface DeliveryClient {
     @PutMapping
-    DeliveryDto createNewDelivery(@RequestBody DeliveryDto deliveryDto);
+    DeliveryDto createNewDelivery(@RequestBody DeliveryDto deliveryDto) throws FeignException;
 
     @PostMapping("/cost")
-    Double calculateDeliveryCost(OrderDto orderDto);
+    Double calculateDeliveryCost(OrderDto orderDto) throws FeignException;
 
     @PostMapping("/picked")
-    void pickedOrder(UUID deliveryId);
+    void pickedOrder(UUID deliveryId) throws FeignException;
 
     @PostMapping("/successful")
-    void successfulDelivery(@RequestBody UUID deliveryId);
+    void successfulDelivery(@RequestBody UUID deliveryId) throws FeignException;
 
     @PostMapping("/failed")
-    void failedDelivery(@RequestBody UUID deliveryId);
+    void failedDelivery(@RequestBody UUID deliveryId) throws FeignException;
 }
