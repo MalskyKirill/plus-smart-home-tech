@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.client.OrderClient;
 import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.DeliveryDto;
 import ru.yandex.practicum.dto.OrderDto;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class DeliveryServiceImpl implements DeliveryService{
     private final DeliveryRepository deliveryRepository;
     private final WarehouseClient warehouseClient;
+    private final OrderClient orderClient;
 
     private final double BASE_DELIVERY_PRICE = 5.0;
     private final double ADDRESS_1_RATIO = 1;
@@ -73,6 +75,19 @@ public class DeliveryServiceImpl implements DeliveryService{
         }
 
         delivery.setDeliveryState(DeliveryState.IN_PROGRESS);
+    }
+
+    @Override
+    @Transactional
+    public void successful(UUID deliveryId) {
+        Delivery delivery = getDeliveryById(deliveryId);
+        delivery.setDeliveryState(DeliveryState.DELIVERED);
+        try {
+            orderClient.deliveryOrder(delivery.getOrderId());
+        } catch (FeignException ex) {
+            log.error("ошибка при запросе к сервису order на изменение статуса заказа");
+            throw ex;
+        }
     }
 
     private ShippedToDeliveryRequestDto getShippedToDeliveryRequest(Delivery delivery) {

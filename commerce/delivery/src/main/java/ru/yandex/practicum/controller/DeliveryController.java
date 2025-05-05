@@ -34,4 +34,10 @@ public class DeliveryController implements DeliveryClient {
         log.info("POST-запрос к эндпоинту: '/api/v1/delivery/picked' эмуляцию получения товара в доставку");
         deliveryService.picked(deliveryId);
     }
+
+    @Override
+    public void successfulDelivery(UUID deliveryId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/delivery/successful' эмуляцию успешной доставки");
+        deliveryService.successful(deliveryId);
+    }
 }

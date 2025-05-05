@@ -11,4 +11,6 @@ public interface DeliveryService {
     Double cost(OrderDto orderDto);
 
     void picked(UUID deliveryId);
+
+    void successful(UUID deliveryId);
 }

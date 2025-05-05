@@ -19,4 +19,7 @@ public interface DeliveryClient {
 
     @PostMapping("/picked")
     void pickedOrder(UUID deliveryId);
+
+    @PostMapping("/successful")
+    void successfulDelivery(@RequestBody UUID deliveryId);
 }
