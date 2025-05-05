@@ -91,22 +91,29 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    @Transactional
     public void shipped(ShippedToDeliveryRequestDto shippedToDeliveryRequest) {
-
+        log.info("присваеваем собраному заказу номер доставки");
+        OrderBooking orderBooking = getOrderBooking(shippedToDeliveryRequest.getOrderId());
+        orderBooking.setDeliveryId(shippedToDeliveryRequest.getDeliveryId());
     }
 
     @Override
+    @Transactional
     public BookedProductsDto assembly(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest) {
         Map<UUID, Long> assemblyProducts = assemblyProductsForOrderRequest.getProducts();
         Map<UUID, WarehouseProduct> warehouseProducts = warehouseRepository.findAllById(assemblyProducts.keySet())
             .stream()
             .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
 
+        log.info("проверяем наличие товара");
         BookedProductsDto bookedProductsDto = checkQuantityProducts(assemblyProducts, warehouseProducts);
 
+        log.info("на складе уменьшаем количество товаров на количество заказанных");
         warehouseProducts
             .forEach((key, value) -> value.setQuantity(value.getQuantity() - assemblyProducts.get(key)));
 
+        log.info("сохраняем информацию о собранно заказе");
         orderBookingRepository
             .save(OrderBooking.builder()
                 .orderId(assemblyProductsForOrderRequest.getOrderId())
@@ -159,6 +166,12 @@ public class WarehouseServiceImpl implements WarehouseService {
     private WarehouseProduct getWarehouseProduct(UUID productId) {
         return warehouseRepository.findById(productId).orElseThrow(
             () -> new NotFoundException("товара с таким id нет на складе")
+        );
+    }
+
+    private OrderBooking getOrderBooking(UUID orderId) {
+        return orderBookingRepository.findById(orderId).orElseThrow(
+            () -> new NotFoundException("заказа с таким id нет в бд")
         );
     }
 }
