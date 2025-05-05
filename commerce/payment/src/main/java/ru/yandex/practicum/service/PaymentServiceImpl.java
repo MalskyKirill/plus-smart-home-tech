@@ -5,12 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.client.OrderClient;
 import ru.yandex.practicum.client.ShoppingStoreClient;
 import ru.yandex.practicum.dto.OrderDto;
 import ru.yandex.practicum.dto.PaymentDto;
 import ru.yandex.practicum.dto.ProductDto;
+import ru.yandex.practicum.dto.enums.PaymentState;
+import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.exeption.ValidationException;
 import ru.yandex.practicum.mapper.PaymentMapper;
+import ru.yandex.practicum.model.Payment;
 import ru.yandex.practicum.repository.PaymentRepository;
 
 import java.util.Map;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class PaymentServiceImpl implements PaymentService{
     private final PaymentRepository paymentRepository;
     private final ShoppingStoreClient shoppingStoreClient;
+    private final OrderClient orderClient;
 
     @Override
     @Transactional
@@ -75,5 +80,22 @@ public class PaymentServiceImpl implements PaymentService{
         return orderDto.getDeliveryPrice()
             + orderDto.getProductPrice()
             + (orderDto.getProductPrice() * PaymentMapper.FEE_TAX);
+    }
+
+    @Override
+    public void refund(UUID paymentId) {
+        Payment payment = getPaymentById(paymentId);
+        payment.setPaymentState(PaymentState.SUCCESS);
+        try {
+            orderClient.paymentOrder(payment.getOrderId());
+        } catch (FeignException ex) {
+            log.error("ошибка при запросе к сервису order на изменение статуса оплыты");
+            throw ex;
+        }
+    }
+
+    private Payment getPaymentById(UUID paymentId) {
+        return paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new NotFoundException("оплаты с id " + paymentId + "нет"));
     }
 }

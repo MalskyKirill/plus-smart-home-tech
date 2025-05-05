@@ -9,6 +9,8 @@ import ru.yandex.practicum.dto.OrderDto;
 import ru.yandex.practicum.dto.PaymentDto;
 import ru.yandex.practicum.service.PaymentService;
 
+import java.util.UUID;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -32,5 +34,11 @@ public class PaymentController implements PaymentClient {
     public Double calculateTotalCost(OrderDto orderDto) {
         log.info("POST-запрос к эндпоинту: '/api/v1/payment/totalCost' на расчет стоимости общей стоимости товара");
         return paymentService.totalCost(orderDto);
+    }
+
+    @Override
+    public void refundPayment(UUID paymentId) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/payment/refund' для эмуляции успешной оплаты в платежного шлюза");
+        paymentService.refund(paymentId);
     }
 }
