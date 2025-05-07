@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,9 +10,12 @@ import ru.yandex.practicum.exeption.InsufficientProductException;
 import ru.yandex.practicum.exeption.NotFoundException;
 import ru.yandex.practicum.exeption.ProductAlreadyExistException;
 import ru.yandex.practicum.mapper.WarehouseProductMapper;
+import ru.yandex.practicum.model.OrderBooking;
 import ru.yandex.practicum.model.WarehouseProduct;
+import ru.yandex.practicum.repositore.OrderBookingRepository;
 import ru.yandex.practicum.repositore.WarehouseRepository;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
+    private final OrderBookingRepository orderBookingRepository;
     private final WarehouseRepository warehouseRepository;
 
     @Override
@@ -47,9 +52,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WarehouseAddressDto getAddress() {
+    public AddressDto getAddress() {
         String warehouseAddress = AddressService.getAddress();
-        return WarehouseAddressDto.builder()
+        return AddressDto.builder()
             .country(warehouseAddress)
             .city(warehouseAddress)
             .street(warehouseAddress)
@@ -66,8 +71,63 @@ public class WarehouseServiceImpl implements WarehouseService {
             .stream()
             .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
 
+        return checkQuantityProducts(cartProducts, products);
+    }
+
+    @Override
+    @Transactional
+    public void returnProducts(Map<UUID, Long> returnProducts) {
+        Map<UUID, WarehouseProduct> products = getWarehouseProducts(returnProducts.keySet());
+
+        returnProducts.forEach((key, value) -> {
+            WarehouseProduct warehouseProduct = products.get(key);
+
+            if (warehouseProduct == null) {
+                throw new ValidationException("Товара с id " + key + " нет на складе");
+            }
+
+            warehouseProduct.setQuantity(warehouseProduct.getQuantity() + value);
+        });
+    }
+
+    @Override
+    @Transactional
+    public void shipped(ShippedToDeliveryRequestDto shippedToDeliveryRequest) {
+        log.info("присваеваем собраному заказу номер доставки");
+        OrderBooking orderBooking = getOrderBooking(shippedToDeliveryRequest.getOrderId());
+        orderBooking.setDeliveryId(shippedToDeliveryRequest.getDeliveryId());
+    }
+
+    @Override
+    @Transactional
+    public BookedProductsDto assembly(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest) {
+        Map<UUID, Long> assemblyProducts = assemblyProductsForOrderRequest.getProducts();
+        Map<UUID, WarehouseProduct> warehouseProducts = warehouseRepository.findAllById(assemblyProducts.keySet())
+            .stream()
+            .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        log.info("проверяем наличие товара");
+        BookedProductsDto bookedProductsDto = checkQuantityProducts(assemblyProducts, warehouseProducts);
+
+        log.info("на складе уменьшаем количество товаров на количество заказанных");
+        warehouseProducts
+            .forEach((key, value) -> value.setQuantity(value.getQuantity() - assemblyProducts.get(key)));
+
+        log.info("сохраняем информацию о собранно заказе");
+        orderBookingRepository
+            .save(OrderBooking.builder()
+                .orderId(assemblyProductsForOrderRequest.getOrderId())
+                .products(assemblyProducts)
+                .build()
+            );
+
+        return bookedProductsDto;
+    }
+
+    private BookedProductsDto checkQuantityProducts(Map<UUID, Long> cartProducts,
+                                            Map<UUID, WarehouseProduct> warehouseProducts) {
         Set<UUID> cardProductIds = cartProducts.keySet();
-        Set<UUID> productsIds = products.keySet();
+        Set<UUID> productsIds = warehouseProducts.keySet();
 
         for (UUID cardProductId : cardProductIds) {
             if (!productsIds.contains(cardProductId)) {
@@ -76,7 +136,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         }
 
         cartProducts.forEach((key, value) -> {
-            WarehouseProduct product = products.get(key);
+            WarehouseProduct product = warehouseProducts.get(key);
             if(product.getQuantity() < value) {
                 throw new InsufficientProductException("товара с id " + key + " нехватает на складе");
             }
@@ -87,19 +147,31 @@ public class WarehouseServiceImpl implements WarehouseService {
         boolean fragile = false;
 
         for (Map.Entry<UUID, Long> cartProduct : cartProducts.entrySet()) {
-            WarehouseProduct product = products.get(cartProduct.getKey());
+            WarehouseProduct product = warehouseProducts.get(cartProduct.getKey());
 
             weight += product.getWeight() * cartProduct.getValue();
-            volume += product.getHeight() * product.getWeight() * product.getDepth() * cartProduct.getValue();
+            volume += (product.getHeight() / 100) * (product.getWidth() / 100) * (product.getDepth() / 100) * cartProduct.getValue();
             fragile = fragile || product.isFragile();
+
         }
 
-        return new BookedProductsDto(weight, volume, fragile);
+        return new BookedProductsDto(Math.round(weight * 100.0) / 100.0, Math.round(volume * 100.0) / 100.0, fragile);
+    }
+
+    private Map<UUID, WarehouseProduct> getWarehouseProducts(Set<UUID> uuids) {
+        return warehouseRepository.findAllById(uuids)
+            .stream().collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
     }
 
     private WarehouseProduct getWarehouseProduct(UUID productId) {
         return warehouseRepository.findById(productId).orElseThrow(
             () -> new NotFoundException("товара с таким id нет на складе")
+        );
+    }
+
+    private OrderBooking getOrderBooking(UUID orderId) {
+        return orderBookingRepository.findById(orderId).orElseThrow(
+            () -> new NotFoundException("заказа с таким id нет в бд")
         );
     }
 }

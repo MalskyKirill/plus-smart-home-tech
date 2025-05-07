@@ -8,6 +8,9 @@ import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.service.WarehouseService;
 
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class WarehouseController implements WarehouseClient {
     }
 
     @Override
-    public WarehouseAddressDto getWarehouseAddress() {
+    public AddressDto getWarehouseAddress() {
         log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/address' на получение адреса склада для расчёта доставки");
         return warehouseService.getAddress();
     }
@@ -37,6 +40,24 @@ public class WarehouseController implements WarehouseClient {
     public BookedProductsDto checkProductsQuantity(ShoppingCartDto shoppingCartDto) {
         log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/check' для проверки количества товара на складе");
         return warehouseService.checkQuantity(shoppingCartDto);
+    }
+
+    @Override
+    public void returnProductsToWarehouse(Map<UUID, Long> returnProducts) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/return' для возврата товара на склад");
+        warehouseService.returnProducts(returnProducts);
+    }
+
+    @Override
+    public void shippedDelivery(ShippedToDeliveryRequestDto shippedToDeliveryRequest) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/shipped' для передачи товаров в доставку");
+        warehouseService.shipped(shippedToDeliveryRequest);
+    }
+
+    @Override
+    public BookedProductsDto assemblyProducts(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest) {
+        log.info("POST-запрос к эндпоинту: '/api/v1/warehouse/assembly' для сборки товаров на складе");
+        return warehouseService.assembly(assemblyProductsForOrderRequest);
     }
 
 }
