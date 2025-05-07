@@ -37,7 +37,7 @@ public class DeliveryServiceImpl implements DeliveryService{
     @Override
     @Transactional
     public DeliveryDto create(DeliveryDto deliveryDto) {
-        log.info("сохраняем доствку в базе данных");
+        log.info("сохраняем доставку в базе данных");
         return DeliveryMapper.toDeliveryDto(deliveryRepository.save(DeliveryMapper.toDelivery(deliveryDto)));
     }
 
@@ -112,7 +112,7 @@ public class DeliveryServiceImpl implements DeliveryService{
 
     private Delivery getDeliveryById(UUID deliveryId) {
         return deliveryRepository.findById(deliveryId)
-            .orElseThrow(() -> new NotFoundException("доставки с id " + deliveryId + "нет"));
+            .orElseThrow(() -> new NotFoundException("доставки с id " + deliveryId + " нет"));
     }
 
     double getRatioByFromAddress(Address address) {
@@ -141,6 +141,6 @@ public class DeliveryServiceImpl implements DeliveryService{
     }
 
     private Delivery getDeliveryByOrderId(UUID orderId) {
-        return deliveryRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("доставки у заказа с id " + orderId + "нет"));
+        return deliveryRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("доставки у заказа с id " + orderId + " нет"));
     }
 }

@@ -62,7 +62,10 @@ public class OrderServiceImpl implements OrderService{
 
         List<Order> orders = orderRepository.findAllByUserName(username);
 
-        return orders.stream().map(OrderMapper::toOrderDto).collect(Collectors.toList());
+        return orders
+            .stream()
+            .map(OrderMapper::toOrderDto)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -292,6 +295,6 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private Order getOrderById(UUID orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("заказа с id " + orderId + "нет"));
+        return orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("заказа с id " + orderId + " нет"));
     }
 }
